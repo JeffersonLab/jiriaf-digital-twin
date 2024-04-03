@@ -29,8 +29,6 @@ echo 'ubuntu' | sudo -S pip3 install pomegranate==0.13.0
 # install pygraphviz
 echo 'ubuntu' | sudo -S pip3 install pygraphviz==1.6
 
-
-# run ros2
-cd ~/digitaltwin_ws
-. install/setup.bash
-ros2 launch digitaltwin digitaltwin_launch_gui.py
+## install x11-apps
+echo 'ubuntu' | sudo -S apt-get update
+echo 'ubuntu' | sudo -S apt-get install x11-apps -y
