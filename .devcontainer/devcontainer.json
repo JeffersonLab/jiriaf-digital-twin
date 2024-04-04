@@ -1,7 +1,7 @@
 {
     "name": "UAV-Digital-Twin",
     "build": {
-        "dockerfile": "../Dockerfile"
+        "dockerfile": "Dockerfile"
     },
     "runArgs": [
         "-it",
