@@ -121,11 +121,19 @@ class StateWidget(QWidget):
 
             self.ax[i].fill_between(range(n_estimates), np.array(self.state_estimate_means[i])-ci_estimate, np.array(self.state_estimate_means[i])+ci_estimate, color='b', alpha=.1)
             self.ax[i].fill_between(range(n_estimates-1,n_estimates+n_predictions-1), np.array(self.state_prediction_means[i])-ci_prediction, np.array(self.state_prediction_means[i])+ci_prediction, color='r', alpha=.1)
-            self.ax[i].legend()
+            # make font size of legend 10
+            self.ax[i].legend(fontsize=10)
+            # make all fonts smaller
+            for item in ([self.ax[i].title, self.ax[i].xaxis.label, self.ax[i].yaxis.label] +
+                     self.ax[i].get_xticklabels() + self.ax[i].get_yticklabels()):
+                item.set_fontsize(10)
+        # set the title
+        from datetime import datetime
+        self.log_fpath = "/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/"
+        self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
+        os.makedirs(self.log_fpath, exist_ok=True)
 
-
-
-        self.static_canvas.figure.savefig("/mnt/hgfs/michaelkapteyn/digitaltwin_ws/src/digitaltwin/outputfiles/figures/state_plot_{}.svg".format(n_estimates), format='svg',transparent=True)
+        self.static_canvas.figure.savefig(self.log_fpath + "state_plot_{}.png".format(n_estimates), format='png',transparent=False)
         self.static_canvas.draw()
         self.static_canvas.draw_idle()
 

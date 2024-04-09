@@ -329,10 +329,10 @@ class GraphicalModel(BayesianNetwork):
                 cleanObservation = [x/3.0 for x in self.config["observations"][str(state[0])][str(state[1])]["3g"]["mean"]]
                 scalefactor = 3.0
             for sensIdx in range(len(cleanObservation)):
-                prob[idx] += np.log(norm.pdf(m[sensIdx], cleanObservation[sensIdx], self.sigma/np.sqrt(scalefactor)))
+                prob[idx] += np.log(norm.pdf(m[sensIdx], cleanObservation[sensIdx], self.sigma/np.sqrt(scalefactor))) # ev
             prob[idx] = np.exp(prob[idx])
         prob = prob/np.linalg.norm(prob,1)
-        eps = np.finfo(float).eps
+        eps = np.finfo(float).eps # smallest positive float number
         prob[prob < eps] = 0
         O = []
         for idx, state in enumerate(self.config["flat_states"]):

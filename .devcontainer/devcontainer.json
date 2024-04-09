@@ -10,5 +10,8 @@
     "settings": { 
         "terminal.integrated.shell.linux": "/bin/bash"
     },
-    "extensions": []
+    "extensions": [
+        "ms-python.python",
+        "SimonSiefke.svg-preview"
+    ]
 }

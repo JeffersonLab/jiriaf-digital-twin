@@ -3,13 +3,45 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 
 # Define the cleanObservation, scalefactor, and sigma
-cleanObservation = [1.0, 2.0, 3.0]
-scalefactor = 1
-sigma = 0.2
+cleanObservation = [
+                        2757.713623046875,
+                        2525.97509765625,
+                        2348.12744140625,
+                        2241.476806640625,
+                        2123.01171875,
+                        1902.717041015625,
+                        1758.9407958984375,
+                        1585.6990966796875,
+                        1298.3394775390625,
+                        1097.670654296875,
+                        980.5802001953125,
+                        863.5585327148438,
+                        750.6728515625,
+                        641.1778564453125,
+                        520.7303466796875,
+                        448.7781066894531,
+                        3009.702880859375,
+                        2569.01171875,
+                        2202.991455078125,
+                        1941.341552734375,
+                        1364.87841796875,
+                        1052.9647216796875,
+                        783.8624877929688,
+                        633.9248657226562
+                    ]
 
-# Generate a range of x values
-# x_values = np.linspace(min(cleanObservation) - 3*sigma, max(cleanObservation) + 3*sigma, 1000)
-x_values = np.linspace(-3, 3, 50)
+# randomly selet 10 values from cleanObservation
+np.random.seed(0)
+random_idx = np.random.choice(len(cleanObservation), 10)
+cleanObservation = [cleanObservation[idx] for idx in random_idx]
+
+
+scalefactor = 2.0
+sigma = 125
+
+# Generate a range of x values from the minimum to the maximum of the cleanObservation
+x_values = np.linspace(min(cleanObservation), max(cleanObservation), 100)
+print(f"x_values: {x_values}")
 
 # Loop over each index
 prob = []
@@ -31,9 +63,8 @@ for idx in range(len(cleanObservation)):
 
 # Plot prob
 plt.figure(figsize=(10, 6))
-plt.plot(x_values, prob[0], label='Clean Observation 1')
-plt.plot(x_values, prob[1], label='Clean Observation 2')
-plt.plot(x_values, prob[2], label='Clean Observation 3')
+for idx in range(len(prob)):
+    plt.plot(x_values, prob[idx], label=f"Index {idx}")
 
 # mark x_values on the plot
 for x in x_values:

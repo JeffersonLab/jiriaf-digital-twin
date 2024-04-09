@@ -134,9 +134,14 @@ class Network(QWidget):
     #         # rospy.loginfo("path to save dot file: %s", full_dot_path)
     #         self.save_graph(full_dot_path)
 
+
     # Qt methods
     def shutdown_plugin(self):
-        self.graph.draw('src/digitaltwin/outputfiles/graph.png', format='png')
+        from datetime import datetime
+        self.log_fpath = "/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/"
+        self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
+        os.makedirs(self.log_fpath, exist_ok=True)
+        self.graph.draw(self.log_fpath + 'graph.png', format='png')
         pass
 
     def save_settings(self, plugin_settings, instance_settings):

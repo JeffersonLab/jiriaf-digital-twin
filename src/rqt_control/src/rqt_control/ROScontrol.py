@@ -106,14 +106,25 @@ class ControlWidget(QWidget):
         self.ax.set_xlim(0,50)
         self.ax.set_ylim(-0.1,1.1)
         self.ax.set_title('Control History')
-        self.ax.legend()
+        self.ax.legend(fontsize=10)
         self.ax.set_yticks([0, 1])
         self.ax.set_yticklabels(['2g','3g'])
         self.ax.set_xlabel('Time')
         self.ax.set_ylabel('Control')
         self.ax.grid()
 
-        self.static_canvas.figure.savefig("/mnt/hgfs/michaelkapteyn/digitaltwin_ws/src/digitaltwin/outputfiles/figures/control_plot_{}.svg".format(n_estimates), format='svg',transparent=True)
+        # make all fonts smaller
+        for item in ([self.ax.title, self.ax.xaxis.label, self.ax.yaxis.label] +
+                        self.ax.get_xticklabels() + self.ax.get_yticklabels()):
+                item.set_fontsize(10)        
+
+        # make directory if it doesn't exist
+        from datetime import datetime
+        self.log_fpath = "/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/"
+        self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
+        os.makedirs(self.log_fpath, exist_ok=True)
+
+        self.static_canvas.figure.savefig(self.log_fpath + "control_plot_{}.png".format(n_estimates), format='png',transparent=False)
         self.static_canvas.draw()
         self.static_canvas.draw_idle()
 

@@ -145,10 +145,19 @@ class RewardWidget(QWidget):
         self.ax.set_title('Reward Functions')
         self.ax.set_xlabel('Time')
         self.ax.set_ylabel('Reward')
-        self.ax.legend()
+        self.ax.legend(fontsize=10)
         self.ax.grid()
+        # make all fonts smaller
+        for item in ([self.ax.title, self.ax.xaxis.label, self.ax.yaxis.label] +
+                    self.ax.get_xticklabels() + self.ax.get_yticklabels()):
+                item.set_fontsize(10)
 
-        self.static_canvas.figure.savefig("/mnt/hgfs/michaelkapteyn/digitaltwin_ws/src/digitaltwin/outputfiles/figures/reward_plot_{}.svg".format(n_estimates), format='svg',transparent=True)
+        from datetime import datetime
+        self.log_fpath = "/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/"
+        self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
+        os.makedirs(self.log_fpath, exist_ok=True)
+
+        self.static_canvas.figure.savefig(self.log_fpath + "reward_plot_{}.png".format(n_estimates), format='png',transparent=False)
         self.static_canvas.draw_idle()
 
     def _handle_refresh_clicked(self, checked):
