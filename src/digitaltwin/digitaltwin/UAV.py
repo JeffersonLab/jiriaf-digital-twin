@@ -29,12 +29,14 @@ class measurementGenerator():
             for state1, state2, control in coord:
                 data.append(self.observations[str(self.states[0][state1])][str(self.states[1][state2])][self.controls[control]]["mean"])
             # Create interpolator object
-            interp = scipy.interpolate.LinearNDInterpolator(coord, data)
+            interp = scipy.interpolate.LinearNDInterpolator(coord, data) # Interpolation object for linear interpolation of data points
+
         else:
             print('Error: Unknown interpolation type:'+str(type))
 
         # Generate clean measurement
         cleanmeasurement = interp(stateIdx[0], stateIdx[1], controlIdx)[0]
+        print(f">>>>>> stateIdx: {stateIdx}, controlIdx: {controlIdx}")
 
         if noisy:
             # Add artificial noise to measurement
@@ -53,6 +55,9 @@ class measurementGenerator():
             cleanmeasurement = [x/3.0 for x in cleanmeasurement]
             noisymeasurement = [x/3.0 for x in noisymeasurement]
 
+        print(f">>>>>> cleanmeasurement: {cleanmeasurement}")
+        print(f">>>>>> noisymeasurement: {noisymeasurement}")
+        
         if noisy:
             return noisymeasurement
         else:
