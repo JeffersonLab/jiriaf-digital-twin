@@ -52,7 +52,8 @@ class Asset(Node):
 
     def publish_sensor_data(self):
         # strain = np.random.rand(24,1).astype('float64')
-        strain = self.UAV.measurementGenerator.getMeasurement(self.truestate,self.control)
+        print(f">>>>>> truestate: {self.truestate}")
+        strain = self.UAV.measurementGenerator.getMeasurement(self.truestate,self.control) # this strain is normalized cleanmeasurement + noise
         sensor_msg = Sensor()
         sensor_msg.type = 0
         sensor_msg.data = strain
@@ -60,6 +61,7 @@ class Asset(Node):
         self.get_logger().info('Asset published sensor data for timestep {} : {}'.format(self.timestep, sensor_msg.data))
 
     def publish_state_data(self):
+        print(f">>>>>> timestep: {self.timestep}")
         self.timestep += 1
         if self.state_transition == 'linear':
             if self.control[0] == 0:
@@ -69,14 +71,14 @@ class Asset(Node):
                 self.truestate[0] += 4./100
                 self.truestate[1] += 4./100
         elif self.state_transition == 'custom':
-            if self.timestep in [20, 30]:
+            if self.timestep in [20, 30]:  # 20, 30
                 self.truestate[0] += 1
-            if self.timestep >= 10 and self.timestep < 20:
+            if self.timestep >= 10 and self.timestep < 20: # 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
                 self.truestate[0] += 0.1
 
-            if self.timestep in [5, 25]:
+            if self.timestep in [5, 25]: # 5, 25
                 self.truestate[1] += 1
-            if self.timestep >= 5 and self.timestep < 15:
+            if self.timestep >= 5 and self.timestep < 15: # 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
                 self.truestate[1] += 0.1
 
         elif self.state_transition == 'piecewise':
