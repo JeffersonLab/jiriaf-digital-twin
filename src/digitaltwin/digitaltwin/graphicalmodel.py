@@ -69,14 +69,23 @@ class GraphicalModel(BayesianNetwork):
         self.bake()
         self.joint = self.compute_joint(self.evidence, 10)
         print("Time to compute joint at timestep {}: {}".format(self.master_timestep,timer()-start))
-
+        # print len of joint and evidence
+        print(f">>>>>> evidence: {self.evidence}") # evidence is a dict of noisy sensor measurements
+        print(f">>>>>> len(joint): {len(self.joint)}")
         start = timer()
         self.marginals = self.convert_joint_to_marginals(self.joint)
         print("Time to convert joint to marginals at timestep {}: {}".format(self.master_timestep,timer()-start))
+        # print len of marginals
+        for key, val in self.marginals.items(): # Ref. Observation is 5*5*1*30=750 // z1*z2*fixed control*sizesample
+            if 'Ref.' in key:
+                print(f">>>>>> {key}: {len(val)}")
+            else:
+                print(f">>>>>> {key}: {val}")
         return
 
     def compute_joint(self, evidence, horizon):
-        return self.predict_proba(evidence)
+        print(f"type of evidence: {type(evidence)}")
+        return self.predict_proba(evidence) # if evidence is empty, this will return the prior distribution for the first timestep and the predicted distribution for all subsequent timesteps
 
     def convert_joint_to_marginals(self,joint_list):
         ## Input: list of distribution objects or strings returned by pomegranate predict_proba method
@@ -186,11 +195,15 @@ class GraphicalModel(BayesianNetwork):
         else:
             if t == 0:
                 P = self.get_prior_factor()
+                print(f">>>>>> prior factor: {P}")
                 self.factors["transition"].append(pm.DiscreteDistribution(P)) # add prior factor
+                print(f">>>>>> transition factor: {self.factors['transition']}")
                 self.variables["states"].append(pm.State( self.factors["transition"][t], name="Damage {}".format(t)))
+                print(f">>>>>> state variable: {self.variables['states']}")
                 self.add_node(self.variables["states"][t])
             else:
                 T = self.get_transition_factor()
+                print(f">>>>>> transition factor: {T}")
                 # check if we have a controlA
                 if len(self.variables["controlAs"]) > t-1:
                     self.factors["transition"].append(pm.ConditionalProbabilityTable(T, [self.factors["transition"][t-1],self.factors["controlA"][t-1]]))
@@ -220,7 +233,7 @@ class GraphicalModel(BayesianNetwork):
         # connect node via observation edge
         self.add_edge(self.variables["states"][t], self.variables["observations"][t] )
 
-    def add_new_ref_obs_node(self, t):
+    def add_new_ref_obs_node(self, t): # Q_t node?
         if len(self.variables["ref_observations"]) > t:
             #node is already in the graph
             return
@@ -281,17 +294,22 @@ class GraphicalModel(BayesianNetwork):
         T = []
         for state1 in self.config["flat_states"]:
             for state2 in self.config["flat_states"]:
-                d1 = state2[0] - state1[0]
+                print(f">>>>>> state1: {state1}")
+                print(f">>>>>> state2: {state2}")
+                d1 = state2[0] - state1[0] # state1 is the parent, state2 is the child; d1 is the change of z1
                 d2 = state2[1] - state1[1]
                 for control in self.config["controls"]:
+                    # for example, if control is 2g, then p1 = 0.05, p2 = 0.05; if control is 3g, then p1 = 0.1, p2 = 0.1
                     p1 = self.config["transition_probabilities"][control]
                     p2 = self.config["transition_probabilities"][control]
 
                     if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
-                        T.append([str(state1),control,str(state2),1.0])
+                        T.append([str(state1),control,str(state2),1.0]) # terminal state
                     elif d1 == d2 == 0:
-                        T.append([str(state1),control,str(state2),(1.-p1)*(1.-p2)])
+                        # if control is 2g, then transition probability is 0.9; if control is 3g, then transition probability is 0.8
+                        T.append([str(state1),control,str(state2),(1.-p1)*(1.-p2)]) 
                     elif d1 == 20 and d2 == 20:
+                        # if control is 2g, then transition probability is 0.05; if control is 3g, then transition probability is 0.1
                         T.append([str(state1),control,str(state2),p1*p2])
                     elif d1 == 20 and d2 == 0:
                         T.append([str(state1),control,str(state2),p1*(1.-p2)])
