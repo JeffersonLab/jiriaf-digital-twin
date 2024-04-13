@@ -139,7 +139,7 @@ class Network(QWidget):
     def shutdown_plugin(self):
         from datetime import datetime
         self.log_fpath = "/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/"
-        self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
+        self.log_fpath += datetime.now().strftime('%m%d_T%H') + '/'
         os.makedirs(self.log_fpath, exist_ok=True)
         self.graph.draw(self.log_fpath + 'graph.png', format='png')
         pass
