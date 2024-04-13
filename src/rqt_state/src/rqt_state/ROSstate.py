@@ -102,6 +102,8 @@ class StateWidget(QWidget):
 
     def plot(self):
         for i in range(2):
+            # set title
+            self.ax[i].set_title('Z{}'.format(i+1))
             self.ax[i].clear()
             self.ax[i].set_xlim(0,50)
             self.ax[i].set_ylim(-0.1,4.1)
