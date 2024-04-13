@@ -68,23 +68,12 @@ class GraphicalModel(BayesianNetwork):
         start = timer()
         self.bake()
         self.joint = self.compute_joint(self.evidence, 10)
-        print("Time to compute joint at timestep {}: {}".format(self.master_timestep,timer()-start))
         # print len of joint and evidence
-        print(f">>>>>> evidence: {self.evidence}") # evidence is a dict of noisy sensor measurements
-        print(f">>>>>> len(joint): {len(self.joint)}")
         start = timer()
         self.marginals = self.convert_joint_to_marginals(self.joint)
-        print("Time to convert joint to marginals at timestep {}: {}".format(self.master_timestep,timer()-start))
-        # print len of marginals
-        for key, val in self.marginals.items(): # Ref. Observation is 5*5*1*30=750 // z1*z2*fixed control*sizesample
-            if 'Ref.' in key:
-                print(f">>>>>> {key}: {len(val)}")
-            else:
-                print(f">>>>>> {key}: {val}")
         return
 
     def compute_joint(self, evidence, horizon):
-        print(f"type of evidence: {type(evidence)}")
         return self.predict_proba(evidence) # if evidence is empty, this will return the prior distribution for the first timestep and the predicted distribution for all subsequent timesteps
 
     def convert_joint_to_marginals(self,joint_list):
@@ -93,6 +82,7 @@ class GraphicalModel(BayesianNetwork):
         self.state_joints = {}
         state_dim = []
         state_names = [state.name for state in self.states]
+        print(f"state_names ================ \n {state_names}")
         for dim in self.config["states"]:
             state_dim.append(len(dim))
         marginals = {}
@@ -142,6 +132,7 @@ class GraphicalModel(BayesianNetwork):
     Node callbacks
     """
     def process_new_observation(self, sensor_measurement):
+        print(f"gm.process_new_observation ============= master_timestep: {self.master_timestep}")
         self.add_new_obs_node(self.master_timestep,list(sensor_measurement))
 
 
@@ -151,7 +142,7 @@ class GraphicalModel(BayesianNetwork):
         self.add_new_state_node(self.master_timestep)
         self.add_new_ref_obs_node(self.master_timestep)
         self.add_new_controlP_node(self.master_timestep)
-
+        
     def process_new_control(self, control):
         self.add_new_controlA_node(self.master_timestep, control)
 
@@ -167,6 +158,7 @@ class GraphicalModel(BayesianNetwork):
     def prepare_prediction(self, t_predict):
         # create nodes and edges for prediction timesteps
         for t in range(self.master_timestep+1, t_predict+1):
+            print(f"gm.prepare_prediction ============= t: {t}")
             self.add_new_state_node(t)
             self.add_new_controlP_node(t)
             self.add_new_ref_obs_node(t)
@@ -189,21 +181,21 @@ class GraphicalModel(BayesianNetwork):
     Functions to add nodes to graph
     """
     def add_new_state_node(self, t):
+        print(f"len(self.variables['states']) = {len(self.variables['states'])} t = {t}")
+        print(f"var_state_name = {[var.name for var in self.variables['states']]}")
         if len(self.variables["states"]) > t:
             # the state already exists in the graph.
             return
         else:
             if t == 0:
+                print(f"000000000000000000000")
                 P = self.get_prior_factor()
-                print(f">>>>>> prior factor: {P}")
                 self.factors["transition"].append(pm.DiscreteDistribution(P)) # add prior factor
-                print(f">>>>>> transition factor: {self.factors['transition']}")
                 self.variables["states"].append(pm.State( self.factors["transition"][t], name="Damage {}".format(t)))
-                print(f">>>>>> state variable: {self.variables['states']}")
                 self.add_node(self.variables["states"][t])
             else:
+                print(f"888888888888888888888")
                 T = self.get_transition_factor()
-                print(f">>>>>> transition factor: {T}")
                 # check if we have a controlA
                 if len(self.variables["controlAs"]) > t-1:
                     self.factors["transition"].append(pm.ConditionalProbabilityTable(T, [self.factors["transition"][t-1],self.factors["controlA"][t-1]]))
@@ -238,7 +230,8 @@ class GraphicalModel(BayesianNetwork):
             #node is already in the graph
             return
         else:
-            self.factors["ref_observation"].append(pm.ConditionalProbabilityTable(self.Q_factor, [self.factors["transition"][t]]))
+            Q = self.get_Q_factor()
+            self.factors["ref_observation"].append(pm.ConditionalProbabilityTable(Q, [self.factors["transition"][t]]))
             self.variables["ref_observations"].append(pm.State(self.factors["ref_observation"][t], name="Ref. Observation {}".format(t)))
 
             # add RV as a node in the graph
@@ -294,8 +287,6 @@ class GraphicalModel(BayesianNetwork):
         T = []
         for state1 in self.config["flat_states"]:
             for state2 in self.config["flat_states"]:
-                print(f">>>>>> state1: {state1}")
-                print(f">>>>>> state2: {state2}")
                 d1 = state2[0] - state1[0] # state1 is the parent, state2 is the child; d1 is the change of z1
                 d2 = state2[1] - state1[1]
                 for control in self.config["controls"]:
