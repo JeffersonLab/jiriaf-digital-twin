@@ -36,8 +36,6 @@ class measurementGenerator():
 
         # Generate clean measurement
         cleanmeasurement = interp(stateIdx[0], stateIdx[1], controlIdx)[0]
-        print(f">>>>>> stateIdx: {stateIdx}, controlIdx: {controlIdx}")
-
         if noisy:
             # Add artificial noise to measurement
             if self.noise.type is "Gaussian":
@@ -54,10 +52,6 @@ class measurementGenerator():
         elif self.controls[controlIdx[0]] == '3g':
             cleanmeasurement = [x/3.0 for x in cleanmeasurement]
             noisymeasurement = [x/3.0 for x in noisymeasurement]
-
-        print(f">>>>>> cleanmeasurement: {cleanmeasurement}")
-        print(f">>>>>> noisymeasurement: {noisymeasurement}")
-        
         if noisy:
             return noisymeasurement
         else:
