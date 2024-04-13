@@ -50,12 +50,16 @@ class Twin(Node):
         self.prediction_length = 10
         self.controlA = [0]
 
-        ## Sensor Data Subscriber
+        ## Sensor Data Subscriber (main loop)
         self.sensor_listener = self.create_subscription(Sensor,'sensor_data', self.sensor_callback,10)
         self.sensor_listener  # prevent unused variable warning
 
+        # Below is to initialize the digital twin before the sensor data is received
         time.sleep(2)
+        print(f"=============  {self.timestep}  =========== Initializing the digital twin")
+        print(f"=============  {self.timestep}  =========== Before, States: {len([state.name for state in self.gm.states])}")
         self.process_new_state()
+        print(f"=============  {self.timestep}  =========== After processing new state, States: {len([state.name for state in self.gm.states])}")
         self.gm.compute_marginals()
         self.process_and_publish_control()
 
@@ -73,26 +77,32 @@ class Twin(Node):
 
 
     def process_and_publish_control(self):
+        print(f"process_and_publish_control === {self.timestep} === Predicting next {self.prediction_length} timesteps")
         # choose an action based on our estimated control policy, add to the graph as a controlA node
         self.choose_action()
+        print(f"after choose_action === {self.timestep} === states: {len([state.name for state in self.gm.states])}")
         self.gm.process_new_control(self.controlA)
+        print(f"after process_new_control === {self.timestep} === states: {len([state.name for state in self.gm.states])}")
         self.prediction_timestep = self.timestep+self.prediction_length
         self.gm.prepare_prediction(self.prediction_timestep)
+        print(f"after prepare_prediction === {self.timestep} === states: {len([state.name for state in self.gm.states])}")
         # publish control and data for viz
         self.publish_controlA()
+        
 
 
     def sensor_callback(self, msg):
         self.gm.process_new_observation(msg.data)
         #start next timestep
+        print(f"=============  {self.timestep}  =========== Before, States: {len([state.name for state in self.gm.states])}")
         self.process_new_state()
+        print(f"=============  {self.timestep}  =========== After processing new state, States: {len([state.name for state in self.gm.states])}")
         self.gm.compute_marginals()
         self.publish_state_estimate()
         self.publish_sensor_ref()
         self.publish_reward_estimate()
         self.publish_control_estimate()
         self.publish_graph()
-
         # publish next control
         self.process_and_publish_control()
 
