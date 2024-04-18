@@ -21,7 +21,7 @@ class measurementGenerator():
         # Choose the interpolation type
         if type is 'linear':
             # Create coordinate pairs
-            lists = [range(0,len(self.states[0])),range(0,len(self.states[0])), range(0,len(self.controls))]
+            lists = [range(0,len(self.states[0])), range(0,len(self.controls))]
             coord = list(product(*lists))
 
             # create data matrix
@@ -44,7 +44,7 @@ class measurementGenerator():
                 noisymeasurement = noisymeasurement.clip(min=1)
             else:
                 noisymeasurement = cleanmeasurement
-
+    
         # normalize data by load factor
         if self.controls[controlIdx[0]] == '2g':
             cleanmeasurement = [x/2.0 for x in cleanmeasurement]
@@ -52,10 +52,16 @@ class measurementGenerator():
         elif self.controls[controlIdx[0]] == '3g':
             cleanmeasurement = [x/3.0 for x in cleanmeasurement]
             noisymeasurement = [x/3.0 for x in noisymeasurement]
+
+        print(f"cleanmeasurement: {cleanmeasurement}")
+        print(f"noisymeasurement: {noisymeasurement}")
+    
         if noisy:
             return noisymeasurement
         else:
             return cleanmeasurement
+        
+
 
 class noiseParams():
     def __init__(self, type = "Gaussian", sigma=150):
