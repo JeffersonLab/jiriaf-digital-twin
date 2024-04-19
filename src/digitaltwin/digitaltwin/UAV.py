@@ -21,9 +21,8 @@ class measurementGenerator():
         # Choose the interpolation type
         if type is 'linear':
             # Create coordinate pairs
-            lists = [range(0,len(self.states[0])), range(0,len(self.controls))]
+            lists = [range(0,len(self.states[0])), range(len(self.states[1])), range(0,len(self.controls))]
             coord = list(product(*lists))
-
             # create data matrix
             data = []
             for state1, state2, control in coord:
