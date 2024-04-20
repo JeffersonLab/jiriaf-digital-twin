@@ -18,27 +18,29 @@ def combine_json():
 
 
 
-def gen_data(data):
+def gen_data(data, num_data):
     # read file as data
     # with open(data_file, "r") as f:
     #     data = json.load(f)
         
-    output = {"0": {}, "20": {}, "40": {}, "60": {}, "80": {}}
+    output = {}
 
 
     for item in data:
         traffic_intensity = item["TrafficIntensity"]
         parallelism = item["Parallelism"]
+        service_rate = item["ServiceRate"]
+        len_queue = item["LengthOfQueue"]
+
         # redefine the parallelism to "2g" if parallelism is 1 and "3g" if parallelism is 2
         if parallelism == 2:
-            parallelism = "2g"
-        elif parallelism == 8:
             parallelism = "3g"
+        elif parallelism == 8:
+            parallelism = "2g"
         else:
             print(f"Parallelism is beyond the range: {parallelism}")
             continue
 
-        service_rate = item["ServiceRate"]
 
         # Determine the group based on traffic intensity from 80 to 120 and 5 groups
         group = None
@@ -56,25 +58,44 @@ def gen_data(data):
             print(f"Traffic intensity is beyond the range: {traffic_intensity}")
             continue
 
+        # Define the another group based on the len_queue from 0 to 5 and 5 groups
+        group_2 = None
+        if 0 <= len_queue < 1:
+            group_2 = "0"
+        elif 1 <= len_queue < 2:
+            group_2 = "20"
+        elif 2 <= len_queue < 3:
+            group_2 = "40"
+        elif 3 <= len_queue < 4:
+            group_2 = "60"
+        elif 4 <= len_queue <= 5:
+            group_2 = "80"
+        else:
+            print(f"Length of queue is beyond the range: {len_queue}")
+            continue
 
-        # append the service rate to the group
-        output[group][parallelism] = output.get(group, {}).get(parallelism, {"mean": []})
-        output[group][parallelism]["mean"].append(service_rate)
+
+        
+    # output should have the structure like output[group][group_2][parallelism] = [service_rate]
+        if group not in output:
+            output[group] = {}
+        if group_2 not in output[group]:
+            output[group][group_2] = {}
+        if parallelism not in output[group][group_2]:
+            output[group][group_2][parallelism] = {"mean": []}
+
+        output[group][group_2][parallelism]["mean"].append(service_rate)
 
 
     # slice the first 100 data
-    num_data = 24
     for key in output:
-        for p_key in output[key]:
-            # if len is less than 100, send error
-            if len(output[key][p_key]["mean"]) < num_data:
-                print(f"Group {key} Parallelism {p_key} has less than 100 data, data: {len(output[key][p_key]['mean'])}")
-                raise ValueError("Data is less than 100")
-            else:
-                output[key][p_key]["mean"] = output[key][p_key]["mean"][:num_data]
-
-                
-
+        for key_2 in output[key]:
+            for key_3 in output[key][key_2]:
+                output[key][key_2][key_3]["mean"] = output[key][key_2][key_3]["mean"][:num_data]
+                if len(output[key][key_2][key_3]["mean"]) != num_data:
+                    print(f"Data is not enough for {key} {key_2} {key_3}, len: {len(output[key][key_2][key_3]['mean'])}")
+                    continue
+                    
     # write to file
     with open("dt_input_config.json", "w") as f:
         json.dump(output, f, indent=4)
@@ -82,38 +103,51 @@ def gen_data(data):
 
 
 
-def get_freq(data_file):
-    # read file as data
-    with open(data_file, "r") as f:
+def calculate_distribution(date_file):
+
+    # Load the data
+    with open(date_file) as f:
         data = json.load(f)
 
-    traffic_intensity = [item["TrafficIntensity"] for item in data]
+    # Initialize the groups
+    groups = {str(i): {"traffic_intensity": 0, "LengthOfQueue": 0} for i in range(0, 100, 20)}
 
-    # Determine the group by traffic intensity from 0 to 1 and 5 groups
-    group = {}
-    for i in range(0, 100, 20):
-        group[str(i)] = 0
-
-    for item in traffic_intensity:
-        if 0 <= item < 0.2:
-            group["0"] += 1
-        elif 0.2 <= item < 0.4:
-            group["20"] += 1
-        elif 0.4 <= item < 0.6:
-            group["40"] += 1
-        elif 0.6 <= item < 0.8:
-            group["60"] += 1
-        elif 0.8 <= item <= 1:
-            group["80"] += 1
+    # Calculate the distribution of traffic_intensity
+    for item in data:
+        traffic_intensity = item["TrafficIntensity"]
+        if 0 <= traffic_intensity < 0.2:
+            groups["0"]["traffic_intensity"] += 1
+        elif 0.2 <= traffic_intensity < 0.4:
+            groups["20"]["traffic_intensity"] += 1
+        elif 0.4 <= traffic_intensity < 0.6:
+            groups["40"]["traffic_intensity"] += 1
+        elif 0.6 <= traffic_intensity < 0.8:
+            groups["60"]["traffic_intensity"] += 1
+        elif 0.8 <= traffic_intensity <= 1:
+            groups["80"]["traffic_intensity"] += 1
         else:
-            print(f"Traffic intensity is beyond the range: {item}")
-            continue
+            print(f"Traffic intensity is beyond the range: {traffic_intensity}")
 
-    print(group)
+    # Calculate the distribution of LengthOfQueue
+    for item in data:
+        LengthOfQueue = item["LengthOfQueue"]
+        if 0 <= LengthOfQueue < 0.1:
+            groups["0"]["LengthOfQueue"] += 1
+        elif 0.1 <= LengthOfQueue < 0.2:
+            groups["20"]["LengthOfQueue"] += 1
+        elif 0.2 <= LengthOfQueue < 0.3:
+            groups["40"]["LengthOfQueue"] += 1
+        elif 0.3 <= LengthOfQueue < 0.4:
+            groups["60"]["LengthOfQueue"] += 1
+        elif 0.4 <= LengthOfQueue <= 0.5:
+            groups["80"]["LengthOfQueue"] += 1
+        else:
+            print(f"LengthOfQueue is beyond the range: {LengthOfQueue}")
 
+    print(groups)
 
-
+    return groups
 
 if __name__ == "__main__":
-    gen_data(combine_json())
-    # get_freq(data_file="/workspaces/UAV-Digital-Twin/test/stream/sim_init_sensor_data/fs_l100_cpu3.json")
+    gen_data(combine_json(), 24)
+    # calculate_distribution("/workspaces/UAV-Digital-Twin/test/stream/sim_init_sensor_data/fs_l100_cpu8.json")            
