@@ -54,8 +54,8 @@ class GraphicalModel(BayesianNetwork):
         self.factors["reward"] = []
         # self.factors["e"] = []
 
-        self.n_samples = 30
-        self.n_samples = np.max([self.n_samples,30]) # can't use more than 30 samples!
+        self.n_samples = 0
+        # self.n_samples = np.max([self.n_samples,30]) # can't use more than 30 samples!
         # self.E_factor = self.get_e_factor()
         self.Q_factor = self.get_Q_factor()
         self.sigma = 125
