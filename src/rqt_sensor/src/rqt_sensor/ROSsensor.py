@@ -112,7 +112,9 @@ class SensorWidget(QWidget):
             self.ax.fill_between(xxref[n_estimates-1:], np.array(mean_predict)-ci_predict, np.array(mean_predict)+ci_predict, color='r', alpha=.1)
 
         self.ax.set_xlim(0,50)
-        self.ax.set_ylim(500,1500)
+        # self.ax.set_ylim(500,1500)
+        # auto scale y axis and add 5% margin for min and max values
+        self.ax.set_ylim(min([min([s[idx] for s in self.sensor_data]) for idx in idxstoplot]) - 0.05*abs(min([s[idx] for s in self.sensor_data])), max([max([s[idx] for s in self.sensor_data]) for idx in idxstoplot]) + 0.5*abs(max([s[idx] for s in self.sensor_data])))
 
         self.ax.set_title('Sensor Data')
         self.ax.set_xlabel('Time')
