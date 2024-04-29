@@ -348,7 +348,8 @@ class GraphicalModel(BayesianNetwork):
         if self.policy is None: # resort to a default policy
             C = []
             for idx, state in enumerate(self.config["flat_states"]):
-                if state[0] >= 20 and state[1] >= 20:
+                # if state[0] >= 20 and state[1] >= 20:
+                if state[0] >= 40 and state[1] >= 40:
                     C.append([str(state), '2g', 1.0])
                     C.append([str(state), '3g', 0.0])
                 else:
@@ -400,7 +401,7 @@ class GraphicalModel(BayesianNetwork):
     Reward Functions
     """
     def health_reward_function(self, ref_obs):
-        max_strain = 2500
+        max_strain = 4
         return 1.0 - (np.max(ref_obs) / max_strain)
 
     def control_reward_function(self, control):
