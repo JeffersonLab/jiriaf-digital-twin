@@ -116,7 +116,7 @@ class StateWidget(QWidget):
             n_predictions = len(self.state_prediction_means[i])
             self.ax[i].plot(range(n_estimates-1,n_estimates+n_predictions-1),self.state_prediction_means[i], 'r--', linewidth=2, label='Predicted')
             self.ax[i].plot(range(n_estimates),self.state_estimate_means[i], 'b-', linewidth=2, label='Estimated')
-            self.ax[i].plot(range(len(self.state_truth[i])),self.state_truth[i],'k', linewidth=2, label='Ground Truth')
+            # self.ax[i].plot(range(len(self.state_truth[i])),self.state_truth[i],'k', linewidth=2, label='Ground Truth')
 
             ci_estimate = 2*np.array(self.state_estimate_stddevs[i])
             ci_prediction = 2*np.array(self.state_prediction_stddevs[i])
