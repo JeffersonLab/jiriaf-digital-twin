@@ -1,1 +1,4 @@
 src/digitaltwin/outputfiles/*
+src/digitaltwin/inputfiles/UAVconfig_orig.json
+src/digitaltwin/inputfiles/UAVconfig_q.json
+src/digitaltwin/inputfiles/UAVconfig.json
