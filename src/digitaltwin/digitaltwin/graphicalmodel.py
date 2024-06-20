@@ -67,6 +67,10 @@ class GraphicalModel(BayesianNetwork):
         # use Pomegranate back-end (forward-backward algorithm) to compute joint probabilities in the PGM
         start = timer()
         self.bake()
+        yaml_file = self.graph.to_json()
+        with open('/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/graph.json', 'w') as f:
+            f.write(yaml_file)
+            
         self.joint = self.compute_joint(self.evidence, 10)
         # print len of joint and evidence
         start = timer()
@@ -101,15 +105,14 @@ class GraphicalModel(BayesianNetwork):
                             if idx < self.n_samples:
                                 sampled_obs_dict[json.dumps(cleanObservation)] = val* 1./self.n_samples
                     marginals[state_name] = sampled_obs_dict
-
             elif 'Observation' in state_name:
                 marginals[state_name] =  json.loads(state)
             elif 'ControlP' in state_name:
                 marginals[state_name] = [[state.parameters[0][control] for control in self.config["controls"] ]] # list of lists for consistency with state...allows multivariate control
-                print(f"marginas[{state_name}] = {marginals[state_name]}")
+                print(f"marginal[{state_name}] = {marginals[state_name]}")
             elif 'ControlA' in state_name:
                 marginals[state_name] = state
-                print(f"marginas[{state_name}] = {marginals[state_name]}")
+                print(f"marginal[{state_name}] = {marginals[state_name]}")
             elif 'Damage' in state_name:
                 posterior_mat = np.zeros(tuple(state_dim))
 
@@ -120,7 +123,8 @@ class GraphicalModel(BayesianNetwork):
                     posterior_mat[tuple(keytuple)] = val
                 for dim in range(len(state_dim)):
                     marginals[state_name].append(list(np.sum(posterior_mat,1-dim)))
-    
+                print(f"marginal[{state_name}] = {marginals[state_name]}")
+
                 self.state_joints[state_name] = posterior_mat
         return marginals
 
