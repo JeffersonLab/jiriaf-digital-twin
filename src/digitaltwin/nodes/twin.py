@@ -47,7 +47,7 @@ class Twin(Node):
         # self.timer = self.create_timer(timer_period, self.timer_callback)
         self.timestep = -1
         self.prediction_timestep = -1
-        self.prediction_length = 10
+        self.prediction_length = 1
         self.controlA = [0]
 
         ## Sensor Data Subscriber (main loop)
@@ -125,6 +125,7 @@ class Twin(Node):
             state_msg.state1 = self.gm.marginals["Damage {}".format(t)][0]
             state_msg.state2 = self.gm.marginals["Damage {}".format(t)][1]
             state_msg.joint = self.gm.state_joints["Damage {}".format(t)].flatten().tolist()
+            print(f"state1: {state_msg.state1} state2: {state_msg.state2} joint: {state_msg.joint}")
 
             if t < self.timestep:
                 # this is an estimate of a past timestep

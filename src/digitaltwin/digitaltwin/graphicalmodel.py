@@ -74,6 +74,7 @@ class GraphicalModel(BayesianNetwork):
         return
 
     def compute_joint(self, evidence, horizon):
+        print(f"gm.compute_joint ============= evidence: {evidence.keys()}")
         return self.predict_proba(evidence) # if evidence is empty, this will return the prior distribution for the first timestep and the predicted distribution for all subsequent timesteps
 
     def convert_joint_to_marginals(self,joint_list):
@@ -105,8 +106,10 @@ class GraphicalModel(BayesianNetwork):
                 marginals[state_name] =  json.loads(state)
             elif 'ControlP' in state_name:
                 marginals[state_name] = [[state.parameters[0][control] for control in self.config["controls"] ]] # list of lists for consistency with state...allows multivariate control
+                print(f"marginas[{state_name}] = {marginals[state_name]}")
             elif 'ControlA' in state_name:
                 marginals[state_name] = state
+                print(f"marginas[{state_name}] = {marginals[state_name]}")
             elif 'Damage' in state_name:
                 posterior_mat = np.zeros(tuple(state_dim))
 
@@ -117,7 +120,7 @@ class GraphicalModel(BayesianNetwork):
                     posterior_mat[tuple(keytuple)] = val
                 for dim in range(len(state_dim)):
                     marginals[state_name].append(list(np.sum(posterior_mat,1-dim)))
-
+    
                 self.state_joints[state_name] = posterior_mat
         return marginals
 
@@ -199,8 +202,11 @@ class GraphicalModel(BayesianNetwork):
                 # check if we have a controlA
                 if len(self.variables["controlAs"]) > t-1:
                     self.factors["transition"].append(pm.ConditionalProbabilityTable(T, [self.factors["transition"][t-1],self.factors["controlA"][t-1]]))
+                    print(f"controlAs = {self.factors['controlA'][t-1]}")
                 else:
                     self.factors["transition"].append(pm.ConditionalProbabilityTable(T, [self.factors["transition"][t-1],self.factors["controlP"][t-1]]))
+                    print(f"controlPs = {self.factors['controlP'][t-1]}")
+                print(f"transition = {self.factors['transition'][t-1]}")
 
                 # add RV as a node in the graph
                 self.variables["states"].append(pm.State( self.factors["transition"][t], name="Damage {}".format(t)))
@@ -218,6 +224,7 @@ class GraphicalModel(BayesianNetwork):
     def add_new_obs_node(self, t, sensor_measurement):
         O = self.get_observation_factor(sensor_measurement)
         self.factors["observation"].append(pm.ConditionalProbabilityTable(O, [self.factors["transition"][t]]))
+        print(f"O = {O}, \n transition = {self.factors['transition'][t]}")
         self.variables["observations"].append(pm.State( self.factors["observation"][t], name="Observation {}".format(t)))
         self.evidence["Observation {}".format(t)] = json.dumps(sensor_measurement)
         # add RV as a node in the graph
@@ -360,6 +367,7 @@ class GraphicalModel(BayesianNetwork):
                 cidx = self.policy(state)
                 C.append([str(state), self.config["controls"][cidx], 1.0])
                 C.append([str(state), self.config["controls"][1-cidx], 0.0])
+            print(f"get_controlP_factor ============= C: {C}")
         return C
 
 
