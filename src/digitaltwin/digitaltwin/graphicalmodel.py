@@ -20,7 +20,8 @@ class GraphicalModel(BayesianNetwork):
         super().__init__(name)
         config_fpath='./src/digitaltwin/inputfiles/UAVconfig.json'
         self.config = read_json_file(config_fpath)
-        self.config["flat_states"] = flatten_list(self.config["states"])
+        # self.config["flat_states"] = flatten_list(self.config["states"])
+        self.config["flat_states"] = [(i, i) for i in self.config["states"][0]]
 
         self.config["ref_obs_lookup"] = {}
         for state1 in self.config["states"][0]:
