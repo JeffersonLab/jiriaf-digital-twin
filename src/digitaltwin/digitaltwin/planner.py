@@ -70,6 +70,7 @@ class Planner:
             for cIdx, c in enumerate(self.controls):
                 Q[sIdx,cIdx] = self.planning_reward(s,cIdx) + np.dot(V,self.transition_probabilities_for_state_and_control(s, c))
 
+        print(f"Q: {Q}")
         bestQ = np.max(Q,1)
         self.bestU = np.argmax(Q,1);
 
