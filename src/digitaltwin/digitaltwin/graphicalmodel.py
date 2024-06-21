@@ -25,6 +25,8 @@ class GraphicalModel(BayesianNetwork):
         self.config["ref_obs_lookup"] = {}
         for state1 in self.config["states"][0]:
             for state2 in self.config["states"][1]:
+                if state1 != state2:
+                    continue
                 sampled_obs = {}
                 for key, val in self.config["observations"][str(state1)][str(state2)]["2g"].items():
                     if key != "mean":
