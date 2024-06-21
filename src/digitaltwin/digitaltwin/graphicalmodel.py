@@ -81,7 +81,6 @@ class GraphicalModel(BayesianNetwork):
         return
 
     def compute_joint(self, evidence, horizon):
-        print(f"gm.compute_joint ============= evidence: {evidence.keys()}")
         return self.predict_proba(evidence) # if evidence is empty, this will return the prior distribution for the first timestep and the predicted distribution for all subsequent timesteps
 
     def convert_joint_to_marginals(self,joint_list):
@@ -90,7 +89,6 @@ class GraphicalModel(BayesianNetwork):
         self.state_joints = {}
         state_dim = []
         state_names = [state.name for state in self.states]
-        print(f"state_names ================ \n {state_names}")
         for dim in self.config["states"]:
             state_dim.append(len(dim))
         marginals = {}
@@ -112,13 +110,10 @@ class GraphicalModel(BayesianNetwork):
                 marginals[state_name] =  json.loads(state)
             elif 'ControlP' in state_name:
                 marginals[state_name] = [[state.parameters[0][control] for control in self.config["controls"] ]] # list of lists for consistency with state...allows multivariate control
-                print(f"marginal[{state_name}] = {marginals[state_name]}")
             elif 'ControlA' in state_name:
                 marginals[state_name] = state
-                print(f"marginal[{state_name}] = {marginals[state_name]}")
             elif 'Damage' in state_name:
                 posterior_mat = np.zeros(tuple(state_dim))
-
                 for key,val in state.parameters[0].items():
                     keytuple = list(eval(key))
                     for kidx, k in enumerate(keytuple):
@@ -126,8 +121,6 @@ class GraphicalModel(BayesianNetwork):
                     posterior_mat[tuple(keytuple)] = val
                 for dim in range(len(state_dim)):
                     marginals[state_name].append(list(np.sum(posterior_mat,1-dim)))
-                print(f"marginal[{state_name}] = {marginals[state_name]}")
-
                 self.state_joints[state_name] = posterior_mat
         return marginals
 
@@ -191,8 +184,6 @@ class GraphicalModel(BayesianNetwork):
     Functions to add nodes to graph
     """
     def add_new_state_node(self, t):
-        print(f"len(self.variables['states']) = {len(self.variables['states'])} t = {t}")
-        print(f"var_state_name = {[var.name for var in self.variables['states']]}")
         if len(self.variables["states"]) > t:
             # the state already exists in the graph.
             return
@@ -209,11 +200,8 @@ class GraphicalModel(BayesianNetwork):
                 # check if we have a controlA
                 if len(self.variables["controlAs"]) > t-1:
                     self.factors["transition"].append(pm.ConditionalProbabilityTable(T, [self.factors["transition"][t-1],self.factors["controlA"][t-1]]))
-                    print(f"controlAs = {self.factors['controlA'][t-1]}")
                 else:
                     self.factors["transition"].append(pm.ConditionalProbabilityTable(T, [self.factors["transition"][t-1],self.factors["controlP"][t-1]]))
-                    print(f"controlPs = {self.factors['controlP'][t-1]}")
-                print(f"transition = {self.factors['transition'][t-1]}")
 
                 # add RV as a node in the graph
                 self.variables["states"].append(pm.State( self.factors["transition"][t], name="Damage {}".format(t)))
@@ -231,7 +219,6 @@ class GraphicalModel(BayesianNetwork):
     def add_new_obs_node(self, t, sensor_measurement):
         O = self.get_observation_factor(sensor_measurement)
         self.factors["observation"].append(pm.ConditionalProbabilityTable(O, [self.factors["transition"][t]]))
-        print(f"O = {O}, \n transition = {self.factors['transition'][t]}")
         self.variables["observations"].append(pm.State( self.factors["observation"][t], name="Observation {}".format(t)))
         self.evidence["Observation {}".format(t)] = json.dumps(sensor_measurement)
         # add RV as a node in the graph
@@ -362,7 +349,7 @@ class GraphicalModel(BayesianNetwork):
         if self.policy is None: # resort to a default policy
             C = []
             for idx, state in enumerate(self.config["flat_states"]):
-                if state[0] >= 20 and state[1] >= 20:
+                if state[0] >= 20 or state[1] >= 20:
                     C.append([str(state), '2g', 1.0])
                     C.append([str(state), '3g', 0.0])
                 else:
