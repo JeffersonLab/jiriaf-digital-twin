@@ -105,7 +105,7 @@ class StateWidget(QWidget):
             # set title
             self.ax[i].set_title('Z{}'.format(i+1))
             self.ax[i].clear()
-            self.ax[i].set_xlim(0,50)
+            self.ax[i].set_xlim(0,100)
             self.ax[i].set_ylim(-0.1,4.1)
             self.ax[i].set_yticks([0,2.5,5])
             self.ax[i].set_yticklabels(['0%','50%','100%'])
@@ -116,6 +116,11 @@ class StateWidget(QWidget):
             n_predictions = len(self.state_prediction_means[i])
             self.ax[i].plot(range(n_estimates-1,n_estimates+n_predictions-1),self.state_prediction_means[i], 'r--', linewidth=2, label='Predicted')
             self.ax[i].plot(range(n_estimates),self.state_estimate_means[i], 'b-', linewidth=2, label='Estimated')
+            # add annotation aside the last point and make font size 8
+            self.ax[i].annotate('{:.3f}'.format(self.state_estimate_means[i][-1]), (n_estimates-1, self.state_estimate_means[i][-1]), textcoords="offset points", xytext=(5,0), ha='center', fontsize=10)
+            # add annotation aside the last point and make font size 8
+            self.ax[i].annotate('{:.3f}'.format(self.state_prediction_means[i][-1]), (n_estimates+n_predictions-1, self.state_prediction_means[i][-1]), textcoords="offset points", xytext=(5,0), ha='center', fontsize=10)
+
             self.ax[i].plot(range(len(self.state_truth[i])),self.state_truth[i],'k', linewidth=2, label='Ground Truth')
 
             ci_estimate = 2*np.array(self.state_estimate_stddevs[i])
@@ -156,6 +161,11 @@ class StateWidget(QWidget):
 
         self.state_estimate_means[0] = [np.dot(range(5), m) for m in self.state_estimate[0]]
         self.state_estimate_means[1] = [np.dot(range(5), m) for m in self.state_estimate[1]]
+
+        print(f"state_estimate_means[0]: {self.state_estimate_means[0]}")
+        print(f"state_estimate_means[1]: {self.state_estimate_means[1]}")
+        print(f"state_estimate[0]: {self.state_estimate[0]}")
+        print(f"state_estimate[1]: {self.state_estimate[1]}")
 
         self.state_estimate_stddevs[0] =[np.power(np.dot(np.power(range(5),2), m) - np.power(np.dot(range(5), m),2),0.5) for m in self.state_estimate[0]]
         self.state_estimate_stddevs[1] =[np.power(np.dot(np.power(range(5),2), m) - np.power(np.dot(range(5), m),2),0.5) for m in self.state_estimate[1]]
