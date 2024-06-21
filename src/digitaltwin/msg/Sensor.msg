@@ -1,3 +1,3 @@
-float64[24] data
-float64[24] vars
+float64[1] data
+float64[1] vars
 int32 type
