@@ -21,13 +21,14 @@ class measurementGenerator():
         # Choose the interpolation type
         if type is 'linear':
             # Create coordinate pairs
-            lists = [range(0,len(self.states[0])),range(0,len(self.states[0])), range(0,len(self.controls))]
+            lists = [range(0,len(self.states[0])), range(0,len(self.controls))]
             coord = list(product(*lists))
-
+            print(f"coord: {coord}")
             # create data matrix
             data = []
-            for state1, state2, control in coord:
-                data.append(self.observations[str(self.states[0][state1])][str(self.states[1][state2])][self.controls[control]]["mean"])
+            for state1, control in coord:
+                data.append(self.observations[str(self.states[0][state1])][str(self.states[1][state1])][self.controls[control]]["mean"])
+            print(f"data: {data}")
             # Create interpolator object
             interp = scipy.interpolate.LinearNDInterpolator(coord, data) # Interpolation object for linear interpolation of data points
 
@@ -35,7 +36,7 @@ class measurementGenerator():
             print('Error: Unknown interpolation type:'+str(type))
 
         # Generate clean measurement
-        cleanmeasurement = interp(stateIdx[0], stateIdx[1], controlIdx)[0]
+        cleanmeasurement = interp(stateIdx[0], controlIdx)[0]
         if noisy:
             # Add artificial noise to measurement
             if self.noise.type is "Gaussian":
