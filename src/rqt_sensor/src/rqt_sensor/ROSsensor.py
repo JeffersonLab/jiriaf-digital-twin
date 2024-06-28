@@ -50,8 +50,8 @@ class SensorWidget(QWidget):
         layout.addWidget(self.static_canvas)
 
         self.ax = self.static_canvas.figure.subplots()
-        self.ax.set_xlim(0,50)
-        self.ax.set_ylim(500,1500)
+        self.ax.set_xlim(0,100)
+        self.ax.set_ylim(0,100)
 
         self.ax.set_title('Sensor Data')
         self.ax.set_xlabel('Time')
@@ -95,7 +95,9 @@ class SensorWidget(QWidget):
         n_estimates = sum(1 if t==1. else 0 for t in self.types)
         xx = range(0,len(self.sensor_data))
         xxref = range(0,len(self.sensor_ref))
+        print(f"n_estimates: {n_estimates}, xx: {xx}, xxref: {xxref}")
         for i, idx in enumerate(idxstoplot):
+            print(f"idx: {idx}, i: {i}, sensor_data: {self.sensor_data}, ref: {self.sensor_ref}")
             self.ax.scatter(xx, [s[idx] for s in self.sensor_data], s=20, c=colors[i], label='epsilonhat {}'.format(idx))
             mean_estimate = [s.data[idx] for s in self.sensor_ref[:n_estimates]]
             vars_estimate =  [s.vars[idx] for s in self.sensor_ref[:n_estimates]]
@@ -111,8 +113,8 @@ class SensorWidget(QWidget):
             self.ax.plot(xxref[n_estimates-1:], mean_predict, '{}--'.format(colors[i]), linewidth=2, label='epsilon {}'.format(idx))
             self.ax.fill_between(xxref[n_estimates-1:], np.array(mean_predict)-ci_predict, np.array(mean_predict)+ci_predict, color='r', alpha=.1)
 
-        self.ax.set_xlim(0,50)
-        self.ax.set_ylim(500,1500)
+        self.ax.set_xlim(0,100)
+        self.ax.set_ylim(0,100)
 
         self.ax.set_title('Sensor Data')
         self.ax.set_xlabel('Time')

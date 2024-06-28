@@ -97,7 +97,7 @@ class TrajectoryWidget(QWidget):
         self.ax.clear()
         self.ax.plot(self.state_prediction_means[0],self.state_prediction_means[1], 'r--', linewidth=2, label='Predicted')
         self.ax.plot(self.state_estimate_means[0],self.state_estimate_means[1], 'b-', linewidth=2, label='Estimated')
-        self.ax.plot(self.state_truth[0],self.state_truth[1],'k--', linewidth=2, label='Ground Truth')
+        # self.ax.plot(self.state_truth[0],self.state_truth[1],'k--', linewidth=2, label='Ground Truth')
         self.plot_ellipses()
         self.ax.set_xlim(-0.1,4.1)
         self.ax.set_ylim(-0.1,4.1)

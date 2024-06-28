@@ -17,7 +17,7 @@ class measurementGenerator():
         self.observations = observations
         self.noise = noise if noise is not None else noiseParams()
 
-    def getMeasurement(self, stateIdx, controlIdx, noisy = True, type = 'linear'):
+    def getMeasurement(self, stateIdx, controlIdx, noisy = False, type = 'linear'):
         # Choose the interpolation type
         if type is 'linear':
             # Create coordinate pairs
@@ -37,6 +37,8 @@ class measurementGenerator():
 
         # Generate clean measurement
         cleanmeasurement = interp(stateIdx[0], controlIdx)[0]
+        print(f"Interpolated measurement: {cleanmeasurement} at state {stateIdx} and control {controlIdx}")
+        noisymeasurement = cleanmeasurement
         if noisy:
             # Add artificial noise to measurement
             if self.noise.type is "Gaussian":
@@ -48,18 +50,18 @@ class measurementGenerator():
 
         # normalize data by load factor
         if self.controls[controlIdx[0]] == '2g':
-            cleanmeasurement = [x/2.0 for x in cleanmeasurement]
-            noisymeasurement = [x/2.0 for x in noisymeasurement]
+            cleanmeasurement = [x for x in cleanmeasurement]
+            noisymeasurement = [x for x in noisymeasurement]
         elif self.controls[controlIdx[0]] == '3g':
-            cleanmeasurement = [x/3.0 for x in cleanmeasurement]
-            noisymeasurement = [x/3.0 for x in noisymeasurement]
+            cleanmeasurement = [x for x in cleanmeasurement]
+            noisymeasurement = [x for x in noisymeasurement]
         if noisy:
             return noisymeasurement
         else:
             return cleanmeasurement
 
 class noiseParams():
-    def __init__(self, type = "Gaussian", sigma=150):
+    def __init__(self, type = "Gaussian", sigma=0.01):
         self.type = type
         self.mean = 0
         self.sigma = sigma

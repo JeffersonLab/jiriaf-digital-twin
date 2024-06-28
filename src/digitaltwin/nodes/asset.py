@@ -58,9 +58,10 @@ class Asset(Node):
         sensor_msg.data = strain
         self.sensor_publisher.publish(sensor_msg)
         self.get_logger().info('Asset published sensor data for timestep {} : {}'.format(self.timestep, sensor_msg.data))
+        print(f"Generating sensor data for {self.truestate} and {self.control}, strain: {strain}")
 
     def publish_state_data(self):
-        print(f"publish_state_data >>>>>> {self.timestep} >>>>>>")
+        print(f"truestate: {self.truestate}")
         self.timestep += 1
         if self.state_transition == 'linear':
             if self.control[0] == 0:
@@ -98,7 +99,14 @@ class Asset(Node):
                 self.truestate[0] += 1.
             if u2 > (1.-p2):
                 self.truestate[1] += 1.
+        elif self.state_transition == 'jiriaf':
+            # a random walk between [0, 1]
+            # self.truestate[0] = np.random.uniform(0, 2)
+            # self.truestate[1] = self.truestate[0]
+            self.truestate[0] = 1.0
+            self.truestate[1] = 1.0
 
+        
         self.truestate_hist[0].append(self.truestate[0])
         self.truestate_hist[1].append(self.truestate[1])
         self.types.append(0)
@@ -112,6 +120,7 @@ class Asset(Node):
 
     def control_callback(self, msg):
         self.control = msg.data
+        print(f"Ground truth: {self.truestate}, control: {self.control}")
         if self.truestate[0] < 4. and self.truestate[1] < 4.: # if mission is over, do not publish another sensor measurement (*should* mean nothing more happens...)
             time.sleep(5)
             self.publish_sensor_data()

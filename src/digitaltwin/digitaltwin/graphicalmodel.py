@@ -33,7 +33,7 @@ class GraphicalModel(BayesianNetwork):
                     if key != "mean":
                         sampled_obs[key] = [x/2.0 for x in val]
                 self.config["ref_obs_lookup"][json.dumps([x/2.0 for x in self.config["observations"][str(state1)][str(state2)]["2g"]["mean"]])] = sampled_obs
-
+        print(f"ref_obs_lookup: {self.config['ref_obs_lookup']}")
 
         self.master_timestep = -1
         self.prediction_timestep = -1
@@ -57,7 +57,7 @@ class GraphicalModel(BayesianNetwork):
         self.factors["reward"] = []
         # self.factors["e"] = []
 
-        self.n_samples = 30
+        self.n_samples = 1
         self.n_samples = np.max([self.n_samples,30]) # can't use more than 30 samples!
         # self.E_factor = self.get_e_factor()
         self.Q_factor = self.get_Q_factor()
@@ -78,6 +78,11 @@ class GraphicalModel(BayesianNetwork):
         # print len of joint and evidence
         start = timer()
         self.marginals = self.convert_joint_to_marginals(self.joint)
+        # print out all marginals
+        print(f"---> Start printing marginals")
+        for key, val in self.marginals.items():
+            print(f"key: {key}, val: {val}")
+        print(f"---> End printing marginals")
         return
 
     def compute_joint(self, evidence, horizon):
@@ -135,7 +140,6 @@ class GraphicalModel(BayesianNetwork):
     Node callbacks
     """
     def process_new_observation(self, sensor_measurement):
-        print(f"gm.process_new_observation ============= master_timestep: {self.master_timestep}")
         self.add_new_obs_node(self.master_timestep,list(sensor_measurement))
 
 
@@ -161,7 +165,6 @@ class GraphicalModel(BayesianNetwork):
     def prepare_prediction(self, t_predict):
         # create nodes and edges for prediction timesteps
         for t in range(self.master_timestep+1, t_predict+1):
-            print(f"gm.prepare_prediction ============= t: {t}")
             self.add_new_state_node(t)
             self.add_new_controlP_node(t)
             self.add_new_ref_obs_node(t)
@@ -189,13 +192,11 @@ class GraphicalModel(BayesianNetwork):
             return
         else:
             if t == 0:
-                print(f"000000000000000000000")
                 P = self.get_prior_factor()
                 self.factors["transition"].append(pm.DiscreteDistribution(P)) # add prior factor
                 self.variables["states"].append(pm.State( self.factors["transition"][t], name="Damage {}".format(t)))
                 self.add_node(self.variables["states"][t])
             else:
-                print(f"888888888888888888888")
                 T = self.get_transition_factor()
                 # check if we have a controlA
                 if len(self.variables["controlAs"]) > t-1:
@@ -284,11 +285,40 @@ class GraphicalModel(BayesianNetwork):
     """
     Functions to get factors, i.e. conditional probability tables encoded by edges in the graph
     """
+    # def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
+    #     T = []
+    #     for state1 in self.config["flat_states"]:
+    #         for state2 in self.config["flat_states"]:
+    #             d1 = state2[0] - state1[0] # state1 is the evidence, state2 is the event; d1 is the change of z1
+    #             d2 = state2[1] - state1[1]
+    #             for control in self.config["controls"]:
+    #                 # for example, if control is 2g, then p1 = 0.05, p2 = 0.05; if control is 3g, then p1 = 0.1, p2 = 0.1
+    #                 p1 = self.config["transition_probabilities"][control]
+    #                 p2 = self.config["transition_probabilities"][control]
+
+    #                 # if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
+    #                 #     T.append([str(state1),control,str(state2),1.0]) # terminal state
+    #                 # elif d1 == d2 == 0:
+    #                 #     # if control is 2g, then transition probability is 0.9; if control is 3g, then transition probability is 0.8
+    #                 #     T.append([str(state1),control,str(state2),(1.-p1)*(1.-p2)]) 
+    #                 # elif d1 == 20 and d2 == 20:
+    #                 #     # if control is 2g, then transition probability is 0.05; if control is 3g, then transition probability is 0.1
+    #                 #     T.append([str(state1),control,str(state2),p1*p2])
+    #                 # elif d1 == 20 and d2 == 0:
+    #                 #     T.append([str(state1),control,str(state2),p1*(1.-p2)])
+    #                 # elif d2 == 20 and d1 == 0:
+    #                 #     T.append([str(state1),control,str(state2),p2*(1.-p1)])
+    #                 # else:
+    #                 #     T.append([str(state1),control,str(state2),0.0])
+
+    #                 T.append([str(state1),control,str(state2), 0.2])
+    #     return T
+
     def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
         T = []
         for state1 in self.config["flat_states"]:
             for state2 in self.config["flat_states"]:
-                d1 = state2[0] - state1[0] # state1 is the parent, state2 is the child; d1 is the change of z1
+                d1 = state2[0] - state1[0] # state1 is the evidence, state2 is the event; d1 is the change of z1
                 d2 = state2[1] - state1[1]
                 for control in self.config["controls"]:
                     # for example, if control is 2g, then p1 = 0.05, p2 = 0.05; if control is 3g, then p1 = 0.1, p2 = 0.1
@@ -296,19 +326,24 @@ class GraphicalModel(BayesianNetwork):
                     p2 = self.config["transition_probabilities"][control]
 
                     if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
-                        T.append([str(state1),control,str(state2),1.0]) # terminal state
+                        T.append([str(state1), control, str(state2), 1.0])  # terminal state
                     elif d1 == d2 == 0:
-                        # if control is 2g, then transition probability is 0.9; if control is 3g, then transition probability is 0.8
-                        T.append([str(state1),control,str(state2),(1.-p1)*(1.-p2)]) 
+                        T.append([str(state1), control, str(state2), (1. - p1) * (1. - p2)])
                     elif d1 == 20 and d2 == 20:
-                        # if control is 2g, then transition probability is 0.05; if control is 3g, then transition probability is 0.1
-                        T.append([str(state1),control,str(state2),p1*p2])
+                        T.append([str(state1), control, str(state2), p1 * p2])
                     elif d1 == 20 and d2 == 0:
-                        T.append([str(state1),control,str(state2),p1*(1.-p2)])
+                        T.append([str(state1), control, str(state2), p1 * (1. - p2)])
                     elif d2 == 20 and d1 == 0:
-                        T.append([str(state1),control,str(state2),p2*(1.-p1)])
+                        T.append([str(state1), control, str(state2), p2 * (1. - p1)])
+                    # Handling transitions from higher to lower states
+                    elif d1 < 0 or d2 < 0:
+                        # Assuming a generic probability for transitions from higher to lower states
+                        # You can adjust the probability based on your specific model or requirements
+                        transition_probability = 0.1  # Example probability
+                        T.append([str(state1), control, str(state2), transition_probability])
                     else:
-                        T.append([str(state1),control,str(state2),0.0])
+                        T.append([str(state1), control, str(state2), 0.0])
+        print(f"T: {T}")
         return T
 
     def get_observation_factor(self, m): # p(O_t | D_t)
@@ -329,6 +364,7 @@ class GraphicalModel(BayesianNetwork):
         O = []
         for idx, state in enumerate(self.config["flat_states"]):
             O.append([str(state), json.dumps(m), float(prob[idx])])
+        print(f"O: {O}")
         return O
 
     def get_Q_factor(self): # p(Q_t | D_t)
@@ -361,7 +397,6 @@ class GraphicalModel(BayesianNetwork):
                 cidx = self.policy(state)
                 C.append([str(state), self.config["controls"][cidx], 1.0])
                 C.append([str(state), self.config["controls"][1-cidx], 0.0])
-            print(f"get_controlP_factor ============= C: {C}")
         return C
 
 
@@ -402,7 +437,7 @@ class GraphicalModel(BayesianNetwork):
     Reward Functions
     """
     def health_reward_function(self, ref_obs):
-        max_strain = 2500
+        max_strain = 6.0
         return 1.0 - (np.max(ref_obs) / max_strain)
 
     def control_reward_function(self, control):
@@ -425,7 +460,7 @@ class GraphicalModel(BayesianNetwork):
                 state2 = keytuple[1]
                 r = self.state_reward_function(state1, state2)
                 R_state += prob*r
-                R_state_var += prob*np.power(r,2) #E[X]^2
+                R_state_var += prob*np.power(r,2)
             R_state_var = R_state_var - np.power(R_state,2) #var = E[x^2] - E[X]^2
             return R_state, R_state_var
 
@@ -437,8 +472,9 @@ class GraphicalModel(BayesianNetwork):
                 ref_obs = json.loads(ref_obs)
                 r = self.health_reward_function(ref_obs)
                 R_health += prob*r
-                R_health_var += prob*np.power(r,2) #E[X]^2
+                R_health_var += prob*np.power(r,2)
             R_health_var = R_health_var - np.power(R_health,2) #var = E[x^2] - E[X]^2
+            print(f"R_health: {R_health}, R_health_var: {R_health_var}")
             return R_health, R_health_var
 
         def evaluate_control_reward(t):
@@ -454,8 +490,9 @@ class GraphicalModel(BayesianNetwork):
                 cidx = self.config["controls"].index(c)
                 r = self.control_reward_function(cidx)
                 R_control += prob*r
-                R_control_var += prob*np.power(r,2) #E[X]^2
+                R_control_var += prob*np.power(r,2)
             R_control_var = R_control_var - np.power(R_control,2) #var = E[x^2] - E[X]^2
+            print(f"R_control: {R_control}, R_control_var: {R_control_var}")
             return R_control, R_control_var
 
         def evaluate_outputerror_reward(t):

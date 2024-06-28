@@ -56,10 +56,7 @@ class Twin(Node):
 
         # Below is to initialize the digital twin before the sensor data is received
         time.sleep(2)
-        print(f"=============  {self.timestep}  =========== Initializing the digital twin")
-        print(f"=============  {self.timestep}  =========== Before, States: {len([state.name for state in self.gm.states])}")
         self.process_new_state()
-        print(f"=============  {self.timestep}  =========== After processing new state, States: {len([state.name for state in self.gm.states])}")
         self.gm.compute_marginals()
         self.process_and_publish_control()
 
@@ -67,36 +64,34 @@ class Twin(Node):
     def choose_action(self):
         # choose an action to take based on max of updated marginal
         self.controlA = [int(np.argmax(a)) for a in self.gm.marginals["ControlP {}".format(self.timestep)]]
+        print(f"Time {self.timestep}\nMarginals: {self.gm.marginals['ControlP {}'.format(self.timestep)]}\nControl: {self.controlA}")
     """
     Callback Functions
     """
 
     def process_new_state(self):
         self.gm.process_new_state()
+        print(f"================= Processing new state at timestep {self.timestep} =================")
         self.timestep += 1
 
 
     def process_and_publish_control(self):
-        print(f"process_and_publish_control === {self.timestep} === Predicting next {self.prediction_length} timesteps")
+        print("Processing and publishing control")
         # choose an action based on our estimated control policy, add to the graph as a controlA node
         self.choose_action()
-        print(f"after choose_action === {self.timestep} === states: {len([state.name for state in self.gm.states])}")
         self.gm.process_new_control(self.controlA)
-        print(f"after process_new_control === {self.timestep} === states: {len([state.name for state in self.gm.states])}")
         self.prediction_timestep = self.timestep+self.prediction_length
         self.gm.prepare_prediction(self.prediction_timestep)
-        print(f"after prepare_prediction === {self.timestep} === states: {len([state.name for state in self.gm.states])}")
         # publish control and data for viz
         self.publish_controlA()
         
 
 
     def sensor_callback(self, msg):
+        print("Received sensor data")
         self.gm.process_new_observation(msg.data)
         #start next timestep
-        print(f"=============  {self.timestep}  =========== Before, States: {len([state.name for state in self.gm.states])}")
         self.process_new_state()
-        print(f"=============  {self.timestep}  =========== After processing new state, States: {len([state.name for state in self.gm.states])}")
         self.gm.compute_marginals()
         self.publish_state_estimate()
         self.publish_sensor_ref()
@@ -114,7 +109,6 @@ class Twin(Node):
     def publish_state_estimate(self):
         state_list_msg = StateList()
         state_list_msg.states = []
-
         for t in range(self.prediction_timestep+1):
             # print("Joint at time {}".format(t))
             # print(self.gm.state_joints["Damage {}".format(t)])
@@ -125,7 +119,6 @@ class Twin(Node):
             state_msg.state1 = self.gm.marginals["Damage {}".format(t)][0]
             state_msg.state2 = self.gm.marginals["Damage {}".format(t)][1]
             state_msg.joint = self.gm.state_joints["Damage {}".format(t)].flatten().tolist()
-            print(f"state1: {state_msg.state1} state2: {state_msg.state2} joint: {state_msg.joint}")
 
             if t < self.timestep:
                 # this is an estimate of a past timestep
