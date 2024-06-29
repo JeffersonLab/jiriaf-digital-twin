@@ -50,11 +50,11 @@ class measurementGenerator():
 
         # normalize data by load factor
         if self.controls[controlIdx[0]] == '2g':
-            cleanmeasurement = [x for x in cleanmeasurement]
-            noisymeasurement = [x for x in noisymeasurement]
+            cleanmeasurement = [x/2.0 for x in cleanmeasurement]
+            noisymeasurement = [x/2.0 for x in noisymeasurement]
         elif self.controls[controlIdx[0]] == '3g':
-            cleanmeasurement = [x for x in cleanmeasurement]
-            noisymeasurement = [x for x in noisymeasurement]
+            cleanmeasurement = [x/3.0 for x in cleanmeasurement]
+            noisymeasurement = [x/3.0 for x in noisymeasurement]
         if noisy:
             return noisymeasurement
         else:
