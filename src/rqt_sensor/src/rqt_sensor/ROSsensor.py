@@ -88,7 +88,7 @@ class SensorWidget(QWidget):
     def plot(self):
 
         self.ax.clear()
-        idxstoplot = [1, 6, 16]
+        idxstoplot = [0]
         colors = ['r', 'g', 'b', 'm', 'c']
 
         self.types = [s.type for s in self.sensor_ref]
@@ -97,7 +97,7 @@ class SensorWidget(QWidget):
         xxref = range(0,len(self.sensor_ref))
         print(f"n_estimates: {n_estimates}, xx: {xx}, xxref: {xxref}")
         for i, idx in enumerate(idxstoplot):
-            print(f"idx: {idx}, i: {i}, sensor_data: {self.sensor_data}, ref: {self.sensor_ref}")
+            print(f"idx: {idx} \n i: {i} \n sensor_data: {self.sensor_data} \n ref: {self.sensor_ref}")
             self.ax.scatter(xx, [s[idx] for s in self.sensor_data], s=20, c=colors[i], label='epsilonhat {}'.format(idx))
             mean_estimate = [s.data[idx] for s in self.sensor_ref[:n_estimates]]
             vars_estimate =  [s.vars[idx] for s in self.sensor_ref[:n_estimates]]
