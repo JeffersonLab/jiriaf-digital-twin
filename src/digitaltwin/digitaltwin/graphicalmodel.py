@@ -58,7 +58,7 @@ class GraphicalModel(BayesianNetwork):
         # self.factors["e"] = []
 
         self.n_samples = 1
-        self.n_samples = np.max([self.n_samples,30]) # can't use more than 30 samples!
+        # self.n_samples = np.max([self.n_samples,30]) # can't use more than 30 samples!
         # self.E_factor = self.get_e_factor()
         self.Q_factor = self.get_Q_factor()
         self.sigma = 125
@@ -321,29 +321,29 @@ class GraphicalModel(BayesianNetwork):
                 d1 = state2[0] - state1[0] # state1 is the evidence, state2 is the event; d1 is the change of z1
                 d2 = state2[1] - state1[1]
                 for control in self.config["controls"]:
-                    # # for example, if control is 2g, then p1 = 0.05, p2 = 0.05; if control is 3g, then p1 = 0.1, p2 = 0.1
-                    # p1 = self.config["transition_probabilities"][control]
-                    # p2 = self.config["transition_probabilities"][control]
+                    # for example, if control is 2g, then p1 = 0.05, p2 = 0.05; if control is 3g, then p1 = 0.1, p2 = 0.1
+                    p1 = self.config["transition_probabilities"][control]
+                    p2 = self.config["transition_probabilities"][control]
 
-                    # if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
-                    #     T.append([str(state1), control, str(state2), 1.0])  # terminal state
-                    # elif d1 == d2 == 0:
-                    #     T.append([str(state1), control, str(state2), (1. - p1) * (1. - p2)])
-                    # elif d1 == 20 and d2 == 20:
-                    #     T.append([str(state1), control, str(state2), p1 * p2])
-                    # elif d1 == 20 and d2 == 0:
-                    #     T.append([str(state1), control, str(state2), p1 * (1. - p2)])
-                    # elif d2 == 20 and d1 == 0:
-                    #     T.append([str(state1), control, str(state2), p2 * (1. - p1)])
-                    # # Handling transitions from higher to lower states
-                    # elif d1 < 0 or d2 < 0:
-                    #     # Assuming a generic probability for transitions from higher to lower states
-                    #     # You can adjust the probability based on your specific model or requirements
-                    #     transition_probability = 0.1  # Example probability
-                    #     T.append([str(state1), control, str(state2), transition_probability])
-                    # else:
-                    #     T.append([str(state1), control, str(state2), 0.0])
-                    T.append([str(state1), control, str(state2), 1])
+                    if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
+                        T.append([str(state1), control, str(state2), 1.0])  # terminal state
+                    elif d1 == d2 == 0:
+                        T.append([str(state1), control, str(state2), (1. - p1) * (1. - p2)])
+                    elif d1 == 20 and d2 == 20:
+                        T.append([str(state1), control, str(state2), p1 * p2])
+                    elif d1 == 20 and d2 == 0:
+                        T.append([str(state1), control, str(state2), p1 * (1. - p2)])
+                    elif d2 == 20 and d1 == 0:
+                        T.append([str(state1), control, str(state2), p2 * (1. - p1)])
+                    # Handling transitions from higher to lower states
+                    elif d1 < 0 or d2 < 0:
+                        # Assuming a generic probability for transitions from higher to lower states
+                        # You can adjust the probability based on your specific model or requirements
+                        transition_probability = 0.1  # Example probability
+                        T.append([str(state1), control, str(state2), transition_probability])
+                    else:
+                        T.append([str(state1), control, str(state2), 0.0])
+                    # T.append([str(state1), control, str(state2), 1])
         print(f"T: {T}")
         return T
 
