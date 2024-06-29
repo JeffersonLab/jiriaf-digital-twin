@@ -71,6 +71,11 @@ class GraphicalModel(BayesianNetwork):
         # print len of joint and evidence
         start = timer()
         self.marginals = self.convert_joint_to_marginals(self.joint)
+        # print out all marginals
+        print(f"---> Start printing marginals")
+        for key, val in self.marginals.items():
+            print(f"key: {key}, val: {val}")
+        print(f"---> End printing marginals")
         return
 
     def compute_joint(self, evidence, horizon):
