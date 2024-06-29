@@ -15,7 +15,7 @@ class Asset(Node):
         ## UAV Properties
         self.UAV = UAV()
         self.truestate = [0.,0.]
-        self.state_transition = 'custom'
+        self.state_transition = 'j'
         self.truestate_hist = [[],[]]
         self.truestate_hist[0].append(self.truestate[0])
         self.truestate_hist[1].append(self.truestate[1])
@@ -99,12 +99,13 @@ class Asset(Node):
                 self.truestate[0] += 1.
             if u2 > (1.-p2):
                 self.truestate[1] += 1.
-        elif self.state_transition == 'jiriaf':
-            # a random walk between [0, 1]
-            # self.truestate[0] = np.random.uniform(0, 2)
-            # self.truestate[1] = self.truestate[0]
-            self.truestate[0] = 1.0
-            self.truestate[1] = 1.0
+        elif self.state_transition == 'j':
+            if self.timestep < 15:
+                self.truestate[0] += 0.2
+                self.truestate[1] += 0.2
+            else:
+                self.truestate[0] -= 0.1
+                self.truestate[1] -= 0.1
 
         
         self.truestate_hist[0].append(self.truestate[0])
