@@ -160,6 +160,7 @@ class Twin(Node):
             ref_obs = None
             ref_obs_var = None
             for key,val in self.gm.marginals["Ref. Observation {}".format(t)].items():
+                print(f"publishing ref obs at timestep {t} with key {key} and val {val}")
                 if ref_obs is None:
                     ref_obs = val*np.array(json.loads(key))
                 else:
