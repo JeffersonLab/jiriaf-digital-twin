@@ -51,7 +51,7 @@ class SensorWidget(QWidget):
 
         self.ax = self.static_canvas.figure.subplots()
         self.ax.set_xlim(0,100)
-        self.ax.set_ylim(0,10)
+        self.ax.set_ylim(0,5)
 
         self.ax.set_title('Sensor Data')
         self.ax.set_xlabel('Time')
@@ -114,7 +114,7 @@ class SensorWidget(QWidget):
             self.ax.fill_between(xxref[n_estimates-1:], np.array(mean_predict)-ci_predict, np.array(mean_predict)+ci_predict, color='r', alpha=.1)
 
         self.ax.set_xlim(0,100)
-        self.ax.set_ylim(0,10)
+        self.ax.set_ylim(0,5)
 
         self.ax.set_title('Sensor Data')
         self.ax.set_xlabel('Time')
