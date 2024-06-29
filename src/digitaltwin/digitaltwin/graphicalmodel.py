@@ -299,20 +299,22 @@ class GraphicalModel(BayesianNetwork):
                     p1 = self.config["transition_probabilities"][control]
                     p2 = self.config["transition_probabilities"][control]
 
-                    if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
-                        T.append([str(state1),control,str(state2),1.0]) # terminal state
-                    elif d1 == d2 == 0:
-                        # if control is 2g, then transition probability is 0.9; if control is 3g, then transition probability is 0.8
-                        T.append([str(state1),control,str(state2),(1.-p1)*(1.-p2)]) 
-                    elif d1 == 20 and d2 == 20:
-                        # if control is 2g, then transition probability is 0.05; if control is 3g, then transition probability is 0.1
-                        T.append([str(state1),control,str(state2),p1*p2])
-                    elif d1 == 20 and d2 == 0:
-                        T.append([str(state1),control,str(state2),p1*(1.-p2)])
-                    elif d2 == 20 and d1 == 0:
-                        T.append([str(state1),control,str(state2),p2*(1.-p1)])
-                    else:
-                        T.append([str(state1),control,str(state2),0.0])
+                    # if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
+                    #     T.append([str(state1),control,str(state2),1.0]) # terminal state
+                    # elif d1 == d2 == 0:
+                    #     # if control is 2g, then transition probability is 0.9; if control is 3g, then transition probability is 0.8
+                    #     T.append([str(state1),control,str(state2),(1.-p1)*(1.-p2)]) 
+                    # elif d1 == 20 and d2 == 20:
+                    #     # if control is 2g, then transition probability is 0.05; if control is 3g, then transition probability is 0.1
+                    #     T.append([str(state1),control,str(state2),p1*p2])
+                    # elif d1 == 20 and d2 == 0:
+                    #     T.append([str(state1),control,str(state2),p1*(1.-p2)])
+                    # elif d2 == 20 and d1 == 0:
+                    #     T.append([str(state1),control,str(state2),p2*(1.-p1)])
+                    # else:
+                    #     T.append([str(state1),control,str(state2),0.0])
+
+                    T.append([str(state1),control,str(state2),1.0]) # terminal state
         return T
 
     def get_observation_factor(self, m): # p(O_t | D_t)
