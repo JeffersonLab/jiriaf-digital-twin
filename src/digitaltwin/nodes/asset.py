@@ -100,12 +100,19 @@ class Asset(Node):
             if u2 > (1.-p2):
                 self.truestate[1] += 1.
         elif self.state_transition == 'j':
-            if self.timestep < 10:
+            if self.timestep < 15:
+                self.truestate[0] += 0.2
+                self.truestate[1] += 0.2
+            elif self.timestep < 30 and self.timestep >= 15:
+                self.truestate[0] -= 0.2
+                self.truestate[1] -= 0.2
+            elif self.timestep < 45 and self.timestep >= 30:
                 self.truestate[0] += 0.2
                 self.truestate[1] += 0.2
             else:
-                self.truestate[0] -= 0.1
-                self.truestate[1] -= 0.1
+                self.truestate[0] -= 0.2
+                self.truestate[1] -= 0.2
+                
 
         
         self.truestate_hist[0].append(self.truestate[0])
