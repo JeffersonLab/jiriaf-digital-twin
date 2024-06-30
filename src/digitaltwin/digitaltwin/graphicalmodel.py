@@ -344,7 +344,7 @@ class GraphicalModel(BayesianNetwork):
                     # else:
                     #     T.append([str(state1), control, str(state2), 0.0])
                     T.append([str(state1), control, str(state2), 1])
-        print(f"T: {T}")
+        print(f"T = {T}")
         return T
 
     def get_observation_factor(self, m): # p(O_t | D_t)
