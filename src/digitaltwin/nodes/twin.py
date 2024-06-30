@@ -47,7 +47,7 @@ class Twin(Node):
         # self.timer = self.create_timer(timer_period, self.timer_callback)
         self.timestep = -1
         self.prediction_timestep = -1
-        self.prediction_length = 1
+        self.prediction_length = 11
         self.controlA = [0]
 
         ## Sensor Data Subscriber (main loop)
