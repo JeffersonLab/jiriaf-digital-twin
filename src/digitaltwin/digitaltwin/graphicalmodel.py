@@ -365,7 +365,7 @@ class GraphicalModel(BayesianNetwork):
         O = []
         for idx, state in enumerate(self.config["flat_states"]):
             O.append([str(state), json.dumps(m), float(prob[idx])])
-        print(f"O: {O}")
+        print(f"O = {O}")
         return O
 
     def get_Q_factor(self): # p(Q_t | D_t)
