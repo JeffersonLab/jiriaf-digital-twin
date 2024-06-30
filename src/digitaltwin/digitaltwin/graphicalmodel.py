@@ -318,8 +318,6 @@ class GraphicalModel(BayesianNetwork):
         T = []
         for state1 in self.config["flat_states"]:
             for state2 in self.config["flat_states"]:
-                d1 = state2[0] - state1[0] # state1 is the evidence, state2 is the event; d1 is the change of z1
-                d2 = state2[1] - state1[1]
                 for control in self.config["controls"]:
                     T.append([str(state1), control, str(state2), 1])
         print(f"T = {T}")
@@ -365,7 +363,7 @@ class GraphicalModel(BayesianNetwork):
         if self.policy is None: # resort to a default policy
             C = []
             for idx, state in enumerate(self.config["flat_states"]):
-                if state[0] >= 40 or state[1] >= 40:
+                if state[0] >= 60 or state[1] >= 60:
                     C.append([str(state), '2g', 1.0])
                     C.append([str(state), '3g', 0.0])
                 else:
