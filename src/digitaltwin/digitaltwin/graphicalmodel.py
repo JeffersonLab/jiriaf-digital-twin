@@ -61,7 +61,7 @@ class GraphicalModel(BayesianNetwork):
         # self.n_samples = np.max([self.n_samples,30]) # can't use more than 30 samples!
         # self.E_factor = self.get_e_factor()
         self.Q_factor = self.get_Q_factor()
-        self.sigma = 1
+        self.sigma = 0.001
         self.evidence = {}
         self.policy = None
         self.most_recent_control = 1 #assume start with 3g
