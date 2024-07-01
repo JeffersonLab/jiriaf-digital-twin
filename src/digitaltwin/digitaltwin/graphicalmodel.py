@@ -324,6 +324,50 @@ class GraphicalModel(BayesianNetwork):
     #     print(f"T = {T}")
     #     return T
 
+    def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
+        T = []
+        prob_sums = {}  # Dictionary to keep track of the sum of probabilities for each state1 and control
+
+        for state1 in self.config["flat_states"]:
+            for control in self.config["controls"]:
+                prob_sum = 0  # Initialize sum of probabilities for the current state1 and control
+                temp_transitions = []  # Temporary list to store transitions for current state1 and control
+
+                for state2 in self.config["flat_states"]:
+                    d1 = state2[0] - state1[0]
+                    d2 = state2[1] - state1[1]
+                    p1 = self.config["transition_probabilities"][control]
+                    p2 = self.config["transition_probabilities"][control]
+
+                    if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
+                        prob = 1.0  # terminal state
+                    elif d1 == d2 == 0:
+                        prob = (1.-p1)*(1.-p2)
+                    elif d1 == 20 and d2 == 20:
+                        prob = p1*p2
+                    elif d1 == 20 and d2 == 0:
+                        prob = p1*(1.-p2)
+                    elif d2 == 20 and d1 == 0:
+                        prob = p2*(1.-p1)
+                    elif d1 == -20 and d2 == -20:
+                        prob = 0.2  # Assign a larger probability for d1 and d2 == -20
+                    elif d2 < 0 or d1 < 0:
+                        prob = 0.01
+                    else:
+                        prob = 0.0
+
+                    prob_sum += prob  # Update the sum of probabilities
+                    temp_transitions.append([str(state1), control, str(state2), prob])
+
+                # Normalize probabilities if the sum does not equal 1
+                if prob_sum != 1.0:
+                    temp_transitions = [[trans[0], trans[1], trans[2], trans[3]/prob_sum] for trans in temp_transitions]
+
+                T.extend(temp_transitions)  # Add the normalized transitions to the main list
+
+        print(f"T = {T}")
+        return T
+
     def get_observation_factor(self, m): # p(O_t | D_t)
         prob = np.zeros((len(self.config["flat_states"]),1))
         for idx,state in enumerate(self.config["flat_states"]):
