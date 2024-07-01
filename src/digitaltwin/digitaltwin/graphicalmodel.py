@@ -390,7 +390,7 @@ class GraphicalModel(BayesianNetwork):
         if self.policy is None: # resort to a default policy
             C = []
             for idx, state in enumerate(self.config["flat_states"]):
-                if state[0] >= 60 or state[1] >= 60:
+                if state[0] >= 40 or state[1] >= 40:
                     C.append([str(state), '2g', 1.0])
                     C.append([str(state), '3g', 0.0])
                 else:
