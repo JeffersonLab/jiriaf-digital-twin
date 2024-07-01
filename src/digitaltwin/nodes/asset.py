@@ -15,7 +15,7 @@ class Asset(Node):
         ## UAV Properties
         self.UAV = UAV()
         self.truestate = [0.,0.]
-        self.state_transition = 'j'
+        self.state_transition = 'custom'
         self.truestate_hist = [[],[]]
         self.truestate_hist[0].append(self.truestate[0])
         self.truestate_hist[1].append(self.truestate[1])
