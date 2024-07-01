@@ -14,6 +14,7 @@ class Planner:
         alpha1 = 1.0
         alpha2 = 2.5
         r = alpha1*self.state_reward_function(state, self.controls[cidx]) + alpha2*self.gm.control_reward_function(cidx)
+        print(f"Planning reward for state {state} and control {self.controls[cidx]}: {r}, state reward: {alpha1*self.state_reward_function(state, self.controls[cidx])}, control reward: {alpha2*self.gm.control_reward_function(cidx)}")
         return r
 
 
@@ -28,27 +29,64 @@ class Planner:
                 R += prob*r
         return R
 
+    # def transition_probabilities_for_state_and_control(self, state1, control):
+    #     # returns a list T where T[j] is the probability from transitioning from state1 (first function input) to state j, under a given control (second function input)
+    #     p1 = self.gm.config["transition_probabilities"][control]
+    #     p2 = self.gm.config["transition_probabilities"][control]
+    #     T = []
+    #     for state2 in self.states:
+    #         d1 = state2[0] - state1[0]
+    #         d2 = state2[1] - state1[1]
+    #         if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
+    #             T.append(1.0)
+    #         elif d1 == d2 == 0:
+    #             T.append((1.-p1)*(1.-p2))
+    #         elif d1 == 20 and d2 == 20:
+    #             T.append(p1*p2)
+    #         elif d1 == 20 and d2 == 0:
+    #             T.append(p1*(1.-p2))
+    #         elif d2 == 20 and d1 == 0:
+    #             T.append(p2*(1.-p1))
+    #         else:
+    #             T.append(0.0)
+    #     return T
+
+
     def transition_probabilities_for_state_and_control(self, state1, control):
-        # returns a list T where T[j] is the probability from transitioning from state1 (first function input) to state j, under a given control (second function input)
-        p1 = self.gm.config["transition_probabilities"][control]
-        p2 = self.gm.config["transition_probabilities"][control]
-        T = []
-        for state2 in self.states:
+        prob_list = []  # List to store probabilities
+
+        for state2 in self.gm.config["flat_states"]:
             d1 = state2[0] - state1[0]
             d2 = state2[1] - state1[1]
+            p1 = self.gm.config["transition_probabilities"][control]
+            p2 = self.gm.config["transition_probabilities"][control]
+
             if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
-                T.append(1.0)
+                prob = 1.0  # terminal state
             elif d1 == d2 == 0:
-                T.append((1.-p1)*(1.-p2))
+                prob = (1.-p1)*(1.-p2)
             elif d1 == 20 and d2 == 20:
-                T.append(p1*p2)
+                prob = p1*p2
             elif d1 == 20 and d2 == 0:
-                T.append(p1*(1.-p2))
+                prob = p1*(1.-p2)
             elif d2 == 20 and d1 == 0:
-                T.append(p2*(1.-p1))
+                prob = p2*(1.-p1)
+            elif d1 == -20 and d2 == -20:
+                prob = 0.2
+            elif d2 < 0 or d1 < 0:
+                prob = 0.01
             else:
-                T.append(0.0)
+                prob = 0.0
+
+            prob_list.append(prob)
+
+        # Convert list of probabilities to a numpy array and normalize
+        T = np.array(prob_list)
+        if T.sum() != 1.0:
+            T = T / T.sum()
+
         return T
+
 
     # Value iteration algorithm to compute a policy
     def getPolicy(self):
@@ -68,9 +106,11 @@ class Planner:
         Q  =  np.zeros((Ns,Nc));
         for sIdx, s in enumerate(self.states):
             for cIdx, c in enumerate(self.controls):
+                print(f"Calculating Q for state {s} and control {c}, V: {V}, transition probabilities: {self.transition_probabilities_for_state_and_control(s, c)}")
+                print(f"reward: {self.planning_reward(s,cIdx)}, transition probabilities: {np.dot(V,self.transition_probabilities_for_state_and_control(s, c))}")
                 Q[sIdx,cIdx] = self.planning_reward(s,cIdx) + np.dot(V,self.transition_probabilities_for_state_and_control(s, c))
 
-        print(f"Q: {Q}")
+        print(f"Calculated Q for planning_reward: Q = {Q}")
         bestQ = np.max(Q,1)
         self.bestU = np.argmax(Q,1);
 
