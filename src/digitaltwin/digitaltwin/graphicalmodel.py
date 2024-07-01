@@ -287,45 +287,6 @@ class GraphicalModel(BayesianNetwork):
     """
     def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
         T = []
-        for state1 in self.config["flat_states"]:
-            for state2 in self.config["flat_states"]:
-                d1 = state2[0] - state1[0] # state1 is the evidence, state2 is the event; d1 is the change of z1
-                d2 = state2[1] - state1[1]
-                for control in self.config["controls"]:
-                    # for example, if control is 2g, then p1 = 0.05, p2 = 0.05; if control is 3g, then p1 = 0.1, p2 = 0.1
-                    p1 = self.config["transition_probabilities"][control]
-                    p2 = self.config["transition_probabilities"][control]
-
-                    if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
-                        T.append([str(state1),control,str(state2),1.0]) # terminal state
-                    elif d1 == d2 == 0:
-                        # if control is 2g, then transition probability is 0.9; if control is 3g, then transition probability is 0.8
-                        T.append([str(state1),control,str(state2),(1.-p1)*(1.-p2)]) 
-                    elif d1 == 20 and d2 == 20:
-                        # if control is 2g, then transition probability is 0.05; if control is 3g, then transition probability is 0.1
-                        T.append([str(state1),control,str(state2),p1*p2])
-                    elif d1 == 20 and d2 == 0:
-                        T.append([str(state1),control,str(state2),p1*(1.-p2)])
-                    elif d2 == 20 and d1 == 0:
-                        T.append([str(state1),control,str(state2),p2*(1.-p1)])
-                    elif d2 < 0 or d1 < 0:
-                        T.append([str(state1),control,str(state2),0.1])
-                    else:
-                        T.append([str(state1),control,str(state2),0.0])
-        print(f"T = {T}")
-        return T
-
-    # def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
-    #     T = []
-    #     for state1 in self.config["flat_states"]:
-    #         for state2 in self.config["flat_states"]:
-    #             for control in self.config["controls"]:
-    #                 T.append([str(state1), control, str(state2), 0.2])
-    #     print(f"T = {T}")
-    #     return T
-
-    def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
-        T = []
         prob_sums = {}  # Dictionary to keep track of the sum of probabilities for each state1 and control
 
         for state1 in self.config["flat_states"]:
