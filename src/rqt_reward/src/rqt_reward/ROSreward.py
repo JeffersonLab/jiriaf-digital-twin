@@ -124,9 +124,9 @@ class RewardWidget(QWidget):
 
         # self.ax.plot(xx[:n_estimates], self.reward_policy[-1]:n_estimates],'m-', linewidth=2, label='Policy')
 
-        self.ax.plot(xx[:n_estimates], self.reward_outputerror[-1][:n_estimates],'r-', linewidth=2, label='Error')
-        ci = 2.0*np.sqrt(self.reward_outputerror_var[-1][:n_estimates])
-        self.ax.fill_between(xx[:n_estimates], np.array(self.reward_outputerror[-1][:n_estimates])-ci, np.array(self.reward_outputerror[-1][:n_estimates])+ci, color='r', alpha=.1)
+        # self.ax.plot(xx[:n_estimates], self.reward_outputerror[-1][:n_estimates],'r-', linewidth=2, label='Error')
+        # ci = 2.0*np.sqrt(self.reward_outputerror_var[-1][:n_estimates])
+        # self.ax.fill_between(xx[:n_estimates], np.array(self.reward_outputerror[-1][:n_estimates])-ci, np.array(self.reward_outputerror[-1][:n_estimates])+ci, color='r', alpha=.1)
 
         # self.ax.plot(xx[n_estimates-1:],self.reward_total[-1][n_estimates-1:], 'k--', linewidth=3, label='Total')
         self.ax.plot(xx[n_estimates-1:], self.reward_state[-1][n_estimates-1:],'b--', linewidth=2, label='State')
