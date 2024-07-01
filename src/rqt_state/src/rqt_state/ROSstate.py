@@ -121,7 +121,7 @@ class StateWidget(QWidget):
 
 
             # add annotation aside the last point and make font size 8
-            self.ax[i].annotate('{:.3f}'.format(self.state_estimate_means[i][-1]), (n_estimates-1, self.state_estimate_means[i][-1]+0.5), textcoords="offset points", xytext=(5,0), ha='center', fontsize=10)
+            self.ax[i].annotate('{:.3f}'.format(self.state_estimate_means[i][-1]), (n_estimates-1, self.state_estimate_means[i][-1]), textcoords="offset points", xytext=(5,0), ha='center', fontsize=10)
             # add annotation aside the last point and make font size 8
             self.ax[i].annotate('{:.3f}'.format(self.state_prediction_means[i][-1]), (n_estimates+n_predictions-1, self.state_prediction_means[i][-1]), textcoords="offset points", xytext=(5,0), ha='center', fontsize=10)
 
