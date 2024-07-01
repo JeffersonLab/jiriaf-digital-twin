@@ -318,8 +318,6 @@ class GraphicalModel(BayesianNetwork):
     #     T = []
     #     for state1 in self.config["flat_states"]:
     #         for state2 in self.config["flat_states"]:
-    #             d1 = state2[0] - state1[0] # state1 is the evidence, state2 is the event; d1 is the change of z1
-    #             d2 = state2[1] - state1[1]
     #             for control in self.config["controls"]:
     #                 # for example, if control is 2g, then p1 = 0.05, p2 = 0.05; if control is 3g, then p1 = 0.1, p2 = 0.1
     #                 p1 = self.config["transition_probabilities"][control]
