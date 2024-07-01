@@ -22,7 +22,7 @@
     "gamma": 0.6,
     "transition_probabilities": {
         "2g": 0.05,
-        "3g": 0.1
+        "3g": 0.05
     },
     "observations": {
         "0": {
