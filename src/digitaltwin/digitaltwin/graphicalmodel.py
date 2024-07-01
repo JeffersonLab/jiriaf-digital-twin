@@ -312,6 +312,7 @@ class GraphicalModel(BayesianNetwork):
                         T.append([str(state1),control,str(state2),0.1])
                     else:
                         T.append([str(state1),control,str(state2),0.0])
+        print(f"T = {T}")
         return T
 
     # def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
