@@ -356,7 +356,6 @@ class GraphicalModel(BayesianNetwork):
                 else:
                     p = 0.0
                 Q.append([str(other_state), json.dumps(cleanObservation), p])
-        print(f"Q = {Q}")
         return Q
 
     def get_controlP_factor(self): # p(U_t | D_t)
