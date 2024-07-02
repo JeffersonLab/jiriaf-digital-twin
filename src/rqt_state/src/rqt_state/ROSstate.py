@@ -121,6 +121,11 @@ class StateWidget(QWidget):
             ci_estimate = 2*np.array(self.state_estimate_stddevs[i])
             ci_prediction = 2*np.array(self.state_prediction_stddevs[i])
 
+            #annotate the ci_estimate and ci_prediction at the start of the prediction
+            # self.ax[i].annotate(f"{self.state_estimate_means[i][-1]:.2f}+/-{ci_estimate[-1]:.2f}", (n_estimates-1, self.state_estimate_means[i][-1]+5), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
+            self.ax[i].annotate(f"{self.state_prediction_means[i][0]:.2f}+/-{ci_prediction[0]:.2f}", (n_estimates, self.state_prediction_means[i][0]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
+
+
             self.ax[i].fill_between(range(n_estimates), np.array(self.state_estimate_means[i])-ci_estimate, np.array(self.state_estimate_means[i])+ci_estimate, color='b', alpha=.1)
             self.ax[i].fill_between(range(n_estimates-1,n_estimates+n_predictions-1), np.array(self.state_prediction_means[i])-ci_prediction, np.array(self.state_prediction_means[i])+ci_prediction, color='r', alpha=.1)
             # make font size of legend 10
