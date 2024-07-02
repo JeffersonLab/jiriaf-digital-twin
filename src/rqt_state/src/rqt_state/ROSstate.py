@@ -119,14 +119,6 @@ class StateWidget(QWidget):
 
             print(f"state1: {self.state_estimate[0][-1]}\n means: {self.state_estimate_means[0][-1]}\n stds: {self.state_estimate_stddevs[0][-1]}")
 
-
-            # add annotation aside the last point and make font size 8
-            self.ax[i].annotate('{:.3f}'.format(self.state_estimate_means[i][-1]), (n_estimates-1, self.state_estimate_means[i][-1]), textcoords="offset points", xytext=(5,0), ha='center', fontsize=10)
-            # add annotation aside the last point and make font size 8
-            self.ax[i].annotate('{:.3f}'.format(self.state_prediction_means[i][-1]), (n_estimates+n_predictions-1, self.state_prediction_means[i][-1]), textcoords="offset points", xytext=(5,0), ha='center', fontsize=10)
-
-
-
             # print(f"Ground Truth: {self.state_truth[i]}")
             self.ax[i].plot(range(len(self.state_truth[i])),self.state_truth[i],'k', linewidth=2, label='Ground Truth')
             # antonate
