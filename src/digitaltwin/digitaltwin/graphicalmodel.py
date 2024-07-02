@@ -333,10 +333,10 @@ class GraphicalModel(BayesianNetwork):
         prob = np.zeros((len(self.config["flat_states"]),1))
         for idx,state in enumerate(self.config["flat_states"]):
             if self.most_recent_control == 0:
-                cleanObservation = [x/2.0 for x in self.config["observations"][str(state[0])][str(state[1])]["2g"]["mean"]]
+                cleanObservation = [x/2.0 for x in self.config["observations"][str(state[0])][str(state[1])]["2g"]["theoretical"]]
                 scalefactor = 2.0
             elif self.most_recent_control == 1:
-                cleanObservation = [x/3.0 for x in self.config["observations"][str(state[0])][str(state[1])]["3g"]["mean"]]
+                cleanObservation = [x/3.0 for x in self.config["observations"][str(state[0])][str(state[1])]["3g"]["theoretical"]]
                 scalefactor = 3.0
             for sensIdx in range(len(cleanObservation)):
                 prob[idx] += np.log(norm.pdf(m[sensIdx], cleanObservation[sensIdx], self.sigma/np.sqrt(scalefactor))) # ev
