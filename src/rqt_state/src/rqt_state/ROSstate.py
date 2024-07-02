@@ -122,7 +122,7 @@ class StateWidget(QWidget):
             # print(f"Ground Truth: {self.state_truth[i]}")
             self.ax[i].plot(range(len(self.state_truth[i])),self.state_truth[i],'k', linewidth=2, label='Ground Truth')
             # antonate
-            self.ax[i].annotate('{:.3f}'.format(self.state_truth[i][-1]), (len(self.state_truth[i])-1, self.state_truth[i][-1]), textcoords="offset points", xytext=(5,0), ha='center', fontsize=10)
+            # self.ax[i].annotate('{:.3f}'.format(self.state_truth[i][-1]), (len(self.state_truth[i])-1, self.state_truth[i][-1]), textcoords="offset points", xytext=(5,0), ha='center', fontsize=10)
 
             ci_estimate = 2*np.array(self.state_estimate_stddevs[i])
             ci_prediction = 2*np.array(self.state_prediction_stddevs[i])
