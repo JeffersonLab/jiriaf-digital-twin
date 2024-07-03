@@ -333,11 +333,11 @@ class GraphicalModel(BayesianNetwork):
         prob = np.zeros((len(self.config["flat_states"]),1))
         for idx,state in enumerate(self.config["flat_states"]):
             if self.most_recent_control == 0:
-                cleanObservation = [x/2.0 for x in self.config["observations"][str(state[0])][str(state[1])]["2g"]["theoretical"]]
-                scalefactor = 2.0
+                cleanObservation = [x for x in self.config["observations"][str(state[0])][str(state[1])]["32c"]["theoretical"]]
+                scalefactor = 32.0
             elif self.most_recent_control == 1:
-                cleanObservation = [x/3.0 for x in self.config["observations"][str(state[0])][str(state[1])]["3g"]["theoretical"]]
-                scalefactor = 3.0
+                cleanObservation = [x for x in self.config["observations"][str(state[0])][str(state[1])]["16c"]["theoretical"]]
+                scalefactor = 16.0
             for sensIdx in range(len(cleanObservation)):
                 prob[idx] += np.log(norm.pdf(m[sensIdx], cleanObservation[sensIdx], self.sigma/np.sqrt(scalefactor))) # ev
             prob[idx] = np.exp(prob[idx])
@@ -354,8 +354,8 @@ class GraphicalModel(BayesianNetwork):
         Q = []
         # normalized measurements
         for idx, state in enumerate(self.config["flat_states"]):
-            ref_obs = self.config["observations"][str(state[0])][str(state[1])]["2g"]["mean"]
-            cleanObservation = [x/2.0 for x in ref_obs]
+            ref_obs = self.config["observations"][str(state[0])][str(state[1])]["32c"]["mean"]
+            cleanObservation = [x for x in ref_obs]
             for other_state in self.config["flat_states"]:
                 if (state is other_state):
                     p = 1.0
@@ -369,11 +369,11 @@ class GraphicalModel(BayesianNetwork):
             C = []
             for idx, state in enumerate(self.config["flat_states"]):
                 if state[0] >= 40 or state[1] >= 40:
-                    C.append([str(state), '2g', 1.0])
-                    C.append([str(state), '3g', 0.0])
+                    C.append([str(state), '32c', 1.0])
+                    C.append([str(state), '16c', 0.0])
                 else:
-                    C.append([str(state), '2g', 0.0])
-                    C.append([str(state), '3g', 1.0])
+                    C.append([str(state), '32c', 0.0])
+                    C.append([str(state), '16c', 1.0])
         else:
             C = []
             for idx, state in enumerate(self.config["flat_states"]):
