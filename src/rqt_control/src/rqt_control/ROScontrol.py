@@ -64,7 +64,7 @@ class ControlWidget(QWidget):
         self.ax.set_title('Control History')
         self.ax.legend()
         self.ax.set_yticks([0, 1])
-        self.ax.set_yticklabels(['2g','3g'])
+        self.ax.set_yticklabels(['32c','16c'])
         self.ax.set_xlabel('Time')
         self.ax.set_ylabel('Control')
         self.ax.grid()
