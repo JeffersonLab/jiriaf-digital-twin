@@ -29,10 +29,10 @@ class GraphicalModel(BayesianNetwork):
                 if state1 != state2:
                     continue
                 sampled_obs = {}
-                for key, val in self.config["observations"][str(state1)][str(state2)]["2g"].items():
+                for key, val in self.config["observations"][str(state1)][str(state2)]["32c"].items():
                     if key != "mean":
-                        sampled_obs[key] = [x/2.0 for x in val]
-                self.config["ref_obs_lookup"][json.dumps([x/2.0 for x in self.config["observations"][str(state1)][str(state2)]["2g"]["mean"]])] = sampled_obs
+                        sampled_obs[key] = [x for x in val]
+                self.config["ref_obs_lookup"][json.dumps([x for x in self.config["observations"][str(state1)][str(state2)]["32c"]["mean"]])] = sampled_obs
         print(f"ref_obs_lookup: {self.config['ref_obs_lookup']}")
 
         self.master_timestep = -1
