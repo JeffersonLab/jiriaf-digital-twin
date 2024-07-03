@@ -106,7 +106,7 @@ class StateWidget(QWidget):
             self.ax[i].set_title('Z{}'.format(i+1))
             self.ax[i].clear()
             self.ax[i].set_xlim(0,100)
-            self.ax[i].set_ylim(-0.1,4.1)
+            self.ax[i].set_ylim(-0.1,5.1)
             self.ax[i].set_yticks([0,2,4])
             self.ax[i].set_yticklabels(['0%','50%','100%'])
             self.ax[i].set_xlabel('Time')
