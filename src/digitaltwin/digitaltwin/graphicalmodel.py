@@ -285,46 +285,127 @@ class GraphicalModel(BayesianNetwork):
     """
     Functions to get factors, i.e. conditional probability tables encoded by edges in the graph
     """
+    # def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
+    #     T = []
+    #     prob_sums = {}  # Dictionary to keep track of the sum of probabilities for each state1 and control
+
+    #     for state1 in self.config["flat_states"]:
+    #         for control in self.config["controls"]:
+    #             prob_sum = 0  # Initialize sum of probabilities for the current state1 and control
+    #             temp_transitions = []  # Temporary list to store transitions for current state1 and control
+
+    #             for state2 in self.config["flat_states"]:
+    #                 d1 = state2[0] - state1[0]
+    #                 d2 = state2[1] - state1[1]
+    #                 p1 = self.config["transition_probabilities"][control]
+    #                 p2 = self.config["transition_probabilities"][control]
+
+    #                 if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
+    #                     prob = 1.0  # terminal state
+    #                 elif d1 == d2 == 0:
+    #                     prob = (1.-p1)*(1.-p2)
+    #                 elif d1 == 20 and d2 == 20:
+    #                     prob = p1*p2
+    #                 elif d1 == 20 and d2 == 0:
+    #                     prob = p1*(1.-p2)
+    #                 elif d2 == 20 and d1 == 0:
+    #                     prob = p2*(1.-p1)
+    #                 elif d1 == -20 and d2 == -20:
+    #                     prob = 0.2  # Assign a larger probability for d1 and d2 == -20
+    #                 elif d2 < 0 or d1 < 0:
+    #                     prob = 0.01
+    #                 else:
+    #                     prob = 0.0
+
+    #                 prob_sum += prob  # Update the sum of probabilities
+    #                 temp_transitions.append([str(state1), control, str(state2), prob])
+
+    #             # Normalize probabilities if the sum does not equal 1
+    #             if prob_sum != 1.0:
+    #                 temp_transitions = [[trans[0], trans[1], trans[2], trans[3]/prob_sum] for trans in temp_transitions]
+
+    #             T.extend(temp_transitions)  # Add the normalized transitions to the main list
+
+    #     print(f"T = {T}")
+    #     return T
+    
+
+    # def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
+    #     T = []
+    #     for state1 in self.config["flat_states"]:
+    #         for control in self.config["controls"]:
+    #             temp_transitions = []  # Temporary list to store transitions for current state1 and control
+    #             valid_transitions = 0  # Count valid transitions for current state1 and control
+
+    #             for state2 in self.config["flat_states"]:
+    #                 # Check for valid transition conditions if necessary
+    #                 # For simplicity, assuming all state2 are valid transitions from state1 given control
+    #                 valid_transitions += 1
+
+    #             uniform_prob = 1.0 / valid_transitions  # Calculate uniform probability for each transition
+
+    #             for state2 in self.config["flat_states"]:
+    #                 # Again, check for valid transition conditions if necessary
+    #                 temp_transitions.append([str(state1), control, str(state2), uniform_prob])
+
+    #             T.extend(temp_transitions)  # Add the transitions to the main list
+
+    #     print(f"T = {T}")
+    #     return T
+
     def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
         T = []
-        prob_sums = {}  # Dictionary to keep track of the sum of probabilities for each state1 and control
+        high_state_threshold = 60  # Define what you consider a high state (example threshold)
+
+        # Step 1: Calculate average differences
+        total_d1, total_d2, count = 0, 0, 0
+        for state1 in self.config["flat_states"]:
+            for state2 in self.config["flat_states"]:
+                total_d1 += abs(state2[0] - state1[0])
+                total_d2 += abs(state2[1] - state1[1])
+                count += 1
+        avg_d1 = total_d1 / count
+        avg_d2 = total_d2 / count
 
         for state1 in self.config["flat_states"]:
             for control in self.config["controls"]:
-                prob_sum = 0  # Initialize sum of probabilities for the current state1 and control
-                temp_transitions = []  # Temporary list to store transitions for current state1 and control
+                prob_sum = 0
+                temp_transitions = []
 
                 for state2 in self.config["flat_states"]:
                     d1 = state2[0] - state1[0]
                     d2 = state2[1] - state1[1]
-                    p1 = self.config["transition_probabilities"][control]
-                    p2 = self.config["transition_probabilities"][control]
 
+                    # Adjust probabilities based on average differences
+                    if abs(d1) > avg_d1 * 1.5 or abs(d2) > avg_d2 * 1.5:
+                        prob = 0.01  # Significantly lower probability for jumps
+                    else:
+                        prob = 0.99  # Encourage smoother transitions
+
+                    # Refine logic for downward transitions
+                    if d1 < 0 or d2 < 0:  # Check if it's a downward transition
+                        # Implement a smoother adjustment based on the magnitude of the transition
+                        adjustment_factor = 1 - (0.5 * (abs(d1)/avg_d1 + abs(d2)/avg_d2) / 2)
+                        prob *= max(0.1, adjustment_factor)  # Ensure probability doesn't drop below a threshold
+
+                    # Avoid rapid transitions
+                    if abs(d1) > 20 or abs(d2) > 20:
+                        prob *= 0.05  # Further reduce probability for rapid transitions
+
+                    # Special cases
                     if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
                         prob = 1.0  # terminal state
                     elif d1 == d2 == 0:
-                        prob = (1.-p1)*(1.-p2)
-                    elif d1 == 20 and d2 == 20:
-                        prob = p1*p2
-                    elif d1 == 20 and d2 == 0:
-                        prob = p1*(1.-p2)
-                    elif d2 == 20 and d1 == 0:
-                        prob = p2*(1.-p1)
-                    elif d1 == -20 and d2 == -20:
-                        prob = 0.2  # Assign a larger probability for d1 and d2 == -20
-                    elif d2 < 0 or d1 < 0:
-                        prob = 0.01
-                    else:
-                        prob = 0.0
+                        prob *= 0.2  # Adjust probability for staying in the same state
 
-                    prob_sum += prob  # Update the sum of probabilities
+                    prob_sum += prob
                     temp_transitions.append([str(state1), control, str(state2), prob])
 
-                # Normalize probabilities if the sum does not equal 1
+                # Normalize probabilities
                 if prob_sum != 1.0:
                     temp_transitions = [[trans[0], trans[1], trans[2], trans[3]/prob_sum] for trans in temp_transitions]
 
-                T.extend(temp_transitions)  # Add the normalized transitions to the main list
+                T.extend(temp_transitions)
 
         print(f"T = {T}")
         return T
