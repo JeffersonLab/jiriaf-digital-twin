@@ -420,7 +420,7 @@ class GraphicalModel(BayesianNetwork):
     Reward Functions
     """
     def health_reward_function(self, ref_obs):
-        max_strain = 6.0
+        max_strain = 10
         return 1.0 - (np.max(ref_obs) / max_strain)
 
     def control_reward_function(self, control):
