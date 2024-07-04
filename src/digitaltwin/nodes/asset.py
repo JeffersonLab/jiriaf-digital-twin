@@ -102,7 +102,7 @@ class Asset(Node):
         elif self.state_transition == 'j':
             # self.truestate[0] = 2.
             # self.truestate[1] = 2.
-            increment = 0.35
+            increment = 0.4
             if self.timestep < 10:
                 self.truestate[0] += increment
                 self.truestate[1] += increment
