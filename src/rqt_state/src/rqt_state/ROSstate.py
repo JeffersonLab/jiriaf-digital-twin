@@ -122,8 +122,8 @@ class StateWidget(QWidget):
             ci_prediction = 2*np.array(self.state_prediction_stddevs[i])
 
             #annotate the ci_estimate and ci_prediction at the start of the prediction
-            # self.ax[i].annotate(f"{self.state_estimate_means[i][-1]:.2f}+/-{ci_estimate[-1]:.2f}", (n_estimates-1, self.state_estimate_means[i][-1]+5), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
-            self.ax[i].annotate(f"{self.state_prediction_means[i][0]:.2f}+/-{ci_prediction[0]:.2f}", (n_estimates, self.state_prediction_means[i][0]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
+            self.ax[i].annotate(f"{self.state_estimate_means[i][-1]:.2f}+/-{ci_estimate[-1]:.2f}", (n_estimates-1, self.state_estimate_means[i][-1]+0.5), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
+            self.ax[i].annotate(f"{self.state_prediction_means[i][1]:.2f}+/-{ci_prediction[1]:.2f}", (n_estimates, self.state_prediction_means[i][1]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
 
 
             self.ax[i].fill_between(range(n_estimates), np.array(self.state_estimate_means[i])-ci_estimate, np.array(self.state_estimate_means[i])+ci_estimate, color='b', alpha=.1)
