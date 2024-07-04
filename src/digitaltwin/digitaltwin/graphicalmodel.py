@@ -306,10 +306,6 @@ class GraphicalModel(BayesianNetwork):
                         prob = (1.-p1)*(1.-p2)
                     elif d1 == 20 and d2 == 20:
                         prob = p1*p2
-                    elif d1 == 20 and d2 == 0:
-                        prob = p1*(1.-p2)
-                    elif d2 == 20 and d1 == 0:
-                        prob = p2*(1.-p1)
                     elif d1 == -20 and d2 == -20:
                         prob = 0.2  # Assign a larger probability for d1 and d2 == -20
                     elif d2 < 0 or d1 < 0:
