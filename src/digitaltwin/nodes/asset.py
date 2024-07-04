@@ -121,6 +121,11 @@ class Asset(Node):
             elif self.timestep > 100 and self.timestep < 110:
                 self.truestate[0] -= increment
                 self.truestate[1] -= increment
+        
+        elif self.state_transition == 'constant':
+            self.truestate[0] = 2.
+            self.truestate[1] = 2.
+
 
 
     
