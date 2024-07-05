@@ -87,8 +87,6 @@ class Planner:
         Q  =  np.zeros((Ns,Nc));
         for sIdx, s in enumerate(self.states):
             for cIdx, c in enumerate(self.controls):
-                print(f"Calculating Q for state {s} and control {c}, V: {V}, transition probabilities: {self.transition_probabilities_for_state_and_control(s, c)}")
-                print(f"reward: {self.planning_reward(s,cIdx)}, transition probabilities: {np.dot(V,self.transition_probabilities_for_state_and_control(s, c))}")
                 Q[sIdx,cIdx] = self.planning_reward(s,cIdx) + np.dot(V,self.transition_probabilities_for_state_and_control(s, c))
 
         print(f"Calculated Q for planning_reward: Q = {Q}")
