@@ -35,11 +35,11 @@ class Planner:
         prob_sum = 0  # Initialize sum of probabilities for the current state1 and control
         temp_transitions = []  # Temporary list to store transitions for current state1 and control
 
-        for state2 in self.config["flat_states"]:
+        for state2 in self.states:
             d1 = state2[0] - state1[0]
             d2 = state2[1] - state1[1]
-            p1 = self.config["transition_probabilities"][control]
-            p2 = self.config["transition_probabilities"][control]
+            p1 = self.gm.config["transition_probabilities"][control]
+            p2 = self.gm.config["transition_probabilities"][control]
 
             if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
                 prob = 1.0  # terminal state
