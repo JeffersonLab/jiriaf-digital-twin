@@ -27,7 +27,7 @@ class Twin(Node):
 
         ## Instantiate a planner, passing in the graphical model information
         self.planner = Planner(self.gm)
-        self.gm.policy = None #self.planner.getPolicy()
+        self.gm.policy = self.planner.getPolicy()
         # self.get_logger().info('computed a Policy!')
 
         ## Publishers
