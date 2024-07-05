@@ -29,37 +29,17 @@ class Planner:
                 R += prob*r
         return R
 
-    # def transition_probabilities_for_state_and_control(self, state1, control):
-    #     # returns a list T where T[j] is the probability from transitioning from state1 (first function input) to state j, under a given control (second function input)
-    #     p1 = self.gm.config["transition_probabilities"][control]
-    #     p2 = self.gm.config["transition_probabilities"][control]
-    #     T = []
-    #     for state2 in self.states:
-    #         d1 = state2[0] - state1[0]
-    #         d2 = state2[1] - state1[1]
-    #         if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
-    #             T.append(1.0)
-    #         elif d1 == d2 == 0:
-    #             T.append((1.-p1)*(1.-p2))
-    #         elif d1 == 20 and d2 == 20:
-    #             T.append(p1*p2)
-    #         elif d1 == 20 and d2 == 0:
-    #             T.append(p1*(1.-p2))
-    #         elif d2 == 20 and d1 == 0:
-    #             T.append(p2*(1.-p1))
-    #         else:
-    #             T.append(0.0)
-    #     return T
-
 
     def transition_probabilities_for_state_and_control(self, state1, control):
-        prob_list = []  # List to store probabilities
+        T = []
+        prob_sum = 0  # Initialize sum of probabilities for the current state1 and control
+        temp_transitions = []  # Temporary list to store transitions for current state1 and control
 
-        for state2 in self.gm.config["flat_states"]:
+        for state2 in self.config["flat_states"]:
             d1 = state2[0] - state1[0]
             d2 = state2[1] - state1[1]
-            p1 = self.gm.config["transition_probabilities"][control]
-            p2 = self.gm.config["transition_probabilities"][control]
+            p1 = self.config["transition_probabilities"][control]
+            p2 = self.config["transition_probabilities"][control]
 
             if state1[0] == 80 and state1[1] == 80 and state2[0] == 80 and state2[1] == 80:
                 prob = 1.0  # terminal state
@@ -67,24 +47,25 @@ class Planner:
                 prob = (1.-p1)*(1.-p2)
             elif d1 == 20 and d2 == 20:
                 prob = p1*p2
-            elif d1 == 20 and d2 == 0:
-                prob = p1*(1.-p2)
-            elif d2 == 20 and d1 == 0:
-                prob = p2*(1.-p1)
             elif d1 == -20 and d2 == -20:
-                prob = 0.2
+                prob = p1*p2  # Assign a larger probability for d1 and d2 == -20
             elif d2 < 0 or d1 < 0:
-                prob = 0.01
+                prob = p1*p2*0.5
+            elif d2 > 0 or d1 > 0:
+                prob = p1*p2*0.5
             else:
                 prob = 0.0
 
-            prob_list.append(prob)
+            prob_sum += prob  # Update the sum of probabilities
+            temp_transitions.append([str(state1), control, str(state2), prob])
 
-        # Convert list of probabilities to a numpy array and normalize
-        T = np.array(prob_list)
-        if T.sum() != 1.0:
-            T = T / T.sum()
+        # Normalize probabilities if the sum does not equal 1
+        if prob_sum != 1.0:
+            temp_transitions = [[trans[0], trans[1], trans[2], trans[3]/prob_sum] for trans in temp_transitions]
 
+        T.extend(temp_transitions)  # Add the normalized transitions to the main list
+
+        print(f"T = {T}")
         return T
 
 
