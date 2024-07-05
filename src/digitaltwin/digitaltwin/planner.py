@@ -14,6 +14,8 @@ class Planner:
         alpha1 = 1.0
         alpha2 = 2.5
         r = alpha1*self.state_reward_function(state, self.controls[cidx]) + alpha2*self.gm.control_reward_function(cidx)
+        print(f"state_reward: {alpha1*self.state_reward_function(state, self.controls[cidx])}")
+        print(f"control_reward: {alpha2*self.gm.control_reward_function(cidx)}")
         return r
 
 
@@ -87,6 +89,10 @@ class Planner:
         for sIdx, s in enumerate(self.states):
             for cIdx, c in enumerate(self.controls):
                 Q[sIdx,cIdx] = self.planning_reward(s,cIdx) + np.dot(V,self.transition_probabilities_for_state_and_control(s, c))
+                print("=====================================")
+                print(f"state: {s}, control: {c}")
+                print(f"planing_reward: {self.planning_reward(s,cIdx)}")
+                print(f"t:{np.dot(V,self.transition_probabilities_for_state_and_control(s, c))}")
 
         print(f"Calculated Q for planning_reward: Q = {Q}")
         bestQ = np.max(Q,1)
