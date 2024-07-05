@@ -287,8 +287,6 @@ class GraphicalModel(BayesianNetwork):
     """
     def get_transition_factor(self): # p(D_t | D_t-1, U_t-1)
         T = []
-        prob_sums = {}  # Dictionary to keep track of the sum of probabilities for each state1 and control
-
         for state1 in self.config["flat_states"]:
             for control in self.config["controls"]:
                 prob_sum = 0  # Initialize sum of probabilities for the current state1 and control
@@ -308,8 +306,10 @@ class GraphicalModel(BayesianNetwork):
                         prob = p1*p2
                     elif d1 == -20 and d2 == -20:
                         prob = p1*p2  # Assign a larger probability for d1 and d2 == -20
-                    # elif d2 < 0 or d1 < 0:
-                    #     prob = 0.01
+                    elif d2 < 0 or d1 < 0:
+                        prob = p1*p2*0.5
+                    elif d2 > 0 or d1 > 0:
+                        prob = p1*p2*0.5
                     else:
                         prob = 0.0
 
