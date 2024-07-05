@@ -14,7 +14,6 @@ class Planner:
         alpha1 = 1.0
         alpha2 = 2.5
         r = alpha1*self.state_reward_function(state, self.controls[cidx]) + alpha2*self.gm.control_reward_function(cidx)
-        print(f"Planning reward for state {state} and control {self.controls[cidx]}: {r}, state reward: {alpha1*self.state_reward_function(state, self.controls[cidx])}, control reward: {alpha2*self.gm.control_reward_function(cidx)}")
         return r
 
 
