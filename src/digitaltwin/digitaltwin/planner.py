@@ -63,9 +63,9 @@ class Planner:
         if prob_sum != 1.0:
             temp_transitions = [[trans[0], trans[1], trans[2], trans[3]/prob_sum] for trans in temp_transitions]
 
-        T.extend(temp_transitions)  # Add the normalized transitions to the main list
-
-        print(f"T = {T}")
+        # append only the probabilities to T
+        for prob in temp_transitions:
+            T.append(prob[3])
         return T
 
 
