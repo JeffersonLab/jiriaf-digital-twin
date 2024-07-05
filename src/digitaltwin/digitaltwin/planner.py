@@ -14,6 +14,9 @@ class Planner:
         alpha1 = 1.0
         alpha2 = 2.5
         r = alpha1*self.state_reward_function(state, self.controls[cidx]) + alpha2*self.gm.control_reward_function(cidx)
+        print(f"state: {state}, control: {self.controls[cidx]})")
+        print(f"state reward: {alpha1*self.state_reward_function(state, self.controls[cidx])}")
+        print(f"control reward: {alpha2*self.gm.control_reward_function(cidx)}")
         return r
 
 
@@ -21,11 +24,15 @@ class Planner:
         # wrapper function for gm.health_reward_function - gets the ref_obs corresponding to a state and control, then evaluates the health_reward for that ref_obs.
         ref_observation_dict = self.gm.config["observations"][str(state[0])][str(state[1])][control]
         R = 0
+        print(f"-----------------")
+        print(f"state: {state}, control: {control}")
         for idx, ref_obs in enumerate(ref_observation_dict.values()):
             if idx > 0 and idx <= self.gm.n_samples:
                 r = self.gm.health_reward_function(ref_obs)
                 prob = 1./self.gm.n_samples
                 R += prob*r
+            print(f"R: {R}")
+            print(f"ref_obs: {ref_obs}")
         return R
 
     def transition_probabilities_for_state_and_control(self, state1, control):
@@ -69,6 +76,10 @@ class Planner:
         for sIdx, s in enumerate(self.states):
             for cIdx, c in enumerate(self.controls):
                 Q[sIdx,cIdx] = self.planning_reward(s,cIdx) + np.dot(V,self.transition_probabilities_for_state_and_control(s, c))
+                print("-----------------")
+                print(f"state: {s}, control: {c}")
+                print(f"reward: {self.planning_reward(s,cIdx)}")
+                print(f"transition probabilities: {np.dot(V,self.transition_probabilities_for_state_and_control(s, c))}")
 
         bestQ = np.max(Q,1)
         self.bestU = np.argmax(Q,1);
