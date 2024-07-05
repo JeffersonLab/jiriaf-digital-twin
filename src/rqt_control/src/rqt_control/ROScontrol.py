@@ -103,10 +103,10 @@ class ControlWidget(QWidget):
         self.ax.plot(t[:n_estimates],self.control_estimate_argmax, 'b-', linewidth=2, label='Estimated')
         # self.ax.plot(range(len(self.control_truth)), self.control_truth,'k--', linewidth=2, label='Ground Truth')
         # self.plot_ellipses()
-        self.ax.set_xlim(0,100)
-        self.ax.set_ylim(-0.1,1.1)
+        # self.ax.set_xlim(0,100)
+        # self.ax.set_ylim(-0.1,1.1)
         self.ax.set_title('Control History')
-        self.ax.legend(fontsize=10)
+        self.ax.legend(fontsize=8)
         self.ax.set_yticks([0, 1])
         self.ax.set_yticklabels(['32c','16c'])
         self.ax.set_xlabel('Time')
@@ -124,7 +124,7 @@ class ControlWidget(QWidget):
         self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
         os.makedirs(self.log_fpath, exist_ok=True)
 
-        self.static_canvas.figure.savefig(self.log_fpath + "control_plot_{}.png".format(n_estimates), format='png',transparent=False)
+        self.static_canvas.figure.savefig(self.log_fpath + "control_plot.pdf", format='pdf',transparent=False)
         self.static_canvas.draw()
         self.static_canvas.draw_idle()
 

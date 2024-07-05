@@ -133,23 +133,23 @@ class RewardWidget(QWidget):
         ci = 2.0*np.sqrt(self.reward_state_var[-1][n_estimates-1:])
         self.ax.fill_between(xx[n_estimates-1:], np.array(self.reward_state[-1][n_estimates-1:])-ci, np.array(self.reward_state[-1][n_estimates-1:])+ci, color='b', alpha=.1)
         # annotate the latest number of state rewards
-        self.ax.annotate(f"{self.reward_state[-1][-1]:.2f}", (xx[-1], self.reward_state[-1][-1]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
+        # self.ax.annotate(f"{self.reward_state[-1][-1]:.2f}", (xx[-1], self.reward_state[-1][-1]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
 
         self.ax.plot(xx[n_estimates-1:], self.reward_control[-1][n_estimates-1:],'g--', linewidth=2, label='Control')
         ci = 2.0*np.sqrt(self.reward_control_var[-1][n_estimates-1:])
         self.ax.fill_between(xx[n_estimates-1:], np.array(self.reward_control[-1][n_estimates-1:])-ci, np.array(self.reward_control[-1][n_estimates-1:])+ci, color='g', alpha=.1)
         # annotate the latest number of control rewards
-        self.ax.annotate(f"{self.reward_control[-1][-1]:.2f}", (xx[-1], self.reward_control[-1][-1]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
+        # self.ax.annotate(f"{self.reward_control[-1][-1]:.2f}", (xx[-1], self.reward_control[-1][-1]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
 
         # self.ax.plot(xx[:n_estimates], self.reward_policy[-1]:n_estimates], 'm--', linewidth=2, label='Policy')
         # self.ax.plot(xx[n_estimates-1:], self.reward_outputerror[-1][n_estimates-1:],'r--', linewidth=2, label='Error')
 
-        self.ax.set_xlim(0,100)
+        # self.ax.set_xlim(0,100)
         # self.ax.set_ylim(0,5)
         self.ax.set_title('Reward Functions')
         self.ax.set_xlabel('Time')
         self.ax.set_ylabel('Reward')
-        self.ax.legend(fontsize=10)
+        self.ax.legend(fontsize=8)
         self.ax.grid()
         # make all fonts smaller
         for item in ([self.ax.title, self.ax.xaxis.label, self.ax.yaxis.label] +
@@ -161,7 +161,7 @@ class RewardWidget(QWidget):
         self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
         os.makedirs(self.log_fpath, exist_ok=True)
 
-        self.static_canvas.figure.savefig(self.log_fpath + "reward_plot_{}.png".format(n_estimates), format='png',transparent=False)
+        self.static_canvas.figure.savefig(self.log_fpath + "reward_plot.pdf", format='pdf',transparent=False)
         self.static_canvas.draw_idle()
 
     def _handle_refresh_clicked(self, checked):

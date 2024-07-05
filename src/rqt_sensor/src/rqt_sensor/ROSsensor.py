@@ -98,7 +98,7 @@ class SensorWidget(QWidget):
         print(f"n_estimates: {n_estimates}, xx: {xx}, xxref: {xxref}")
         for i, idx in enumerate(idxstoplot):
             print(f"idx: {idx} \n i: {i} \n sensor_data: {self.sensor_data} \n ref: {self.sensor_ref}")
-            self.ax.scatter(xx, [s[idx] for s in self.sensor_data], s=20, c=colors[i], label='epsilonhat {}'.format(idx))
+            self.ax.scatter(xx, [s[idx] for s in self.sensor_data], s=20, c='black', label='observed Lq')
             mean_estimate = [s.data[idx] for s in self.sensor_ref[:n_estimates]]
             vars_estimate =  [s.vars[idx] for s in self.sensor_ref[:n_estimates]]
             ci_estimate = 2*np.sqrt(vars_estimate) #2 stddevs
@@ -107,19 +107,19 @@ class SensorWidget(QWidget):
             vars_predict =  [s.vars[idx] for s in self.sensor_ref[n_estimates-1:]]
             ci_predict = 2*np.sqrt(vars_predict) #2 stddevs
 
-            self.ax.plot(xxref[:n_estimates], mean_estimate, '{}-'.format(colors[i]), linewidth=2, label='epsilon {}'.format(idx))
+            self.ax.plot(xxref[:n_estimates], mean_estimate, 'b-', linewidth=2, label='Estimated Lq')
             self.ax.fill_between(xxref[:n_estimates], np.array(mean_estimate)-ci_estimate, np.array(mean_estimate)+ci_estimate, color='b', alpha=.1)
 
-            self.ax.plot(xxref[n_estimates-1:], mean_predict, '{}--'.format(colors[i]), linewidth=2, label='epsilon {}'.format(idx))
-            self.ax.fill_between(xxref[n_estimates-1:], np.array(mean_predict)-ci_predict, np.array(mean_predict)+ci_predict, color='r', alpha=.1)
+            self.ax.plot(xxref[n_estimates-1:], mean_predict, 'b--', linewidth=2)
+            self.ax.fill_between(xxref[n_estimates-1:], np.array(mean_predict)-ci_predict, np.array(mean_predict)+ci_predict, color='b', alpha=.1)
 
-        self.ax.set_xlim(0,100)
-        self.ax.set_ylim(0,10)
+        # self.ax.set_xlim(0,100)
+        # self.ax.set_ylim(0,10)
 
         self.ax.set_title('Sensor Data')
         self.ax.set_xlabel('Time')
-        self.ax.set_ylabel('Microstrain')
-        self.ax.legend(fontsize=10)
+        self.ax.set_ylabel('Queue Length Lq')
+        self.ax.legend(fontsize=8)
         self.ax.grid()
         # if n_estimates == 30:
 
@@ -133,7 +133,7 @@ class SensorWidget(QWidget):
         self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
         os.makedirs(self.log_fpath, exist_ok=True)
 
-        self.static_canvas.figure.savefig(self.log_fpath + "sensor_plot_{}.png".format(n_estimates), format='png',transparent=False)
+        self.static_canvas.figure.savefig(self.log_fpath + "sensor_plot.pdf", format='pdf',transparent=False)
         self.static_canvas.draw_idle()
 
     def _handle_refresh_clicked(self, checked):

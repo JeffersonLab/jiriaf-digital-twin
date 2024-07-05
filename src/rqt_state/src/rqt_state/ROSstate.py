@@ -105,8 +105,8 @@ class StateWidget(QWidget):
             # set title
             self.ax[i].set_title('Z{}'.format(i+1))
             self.ax[i].clear()
-            self.ax[i].set_xlim(0,100)
-            self.ax[i].set_ylim(-0.1,5.1)
+            # self.ax[i].set_xlim(0,100)
+            # self.ax[i].set_ylim(-0.1,5.1)
             self.ax[i].set_yticks([0,2,4])
             self.ax[i].set_yticklabels(['0%','50%','100%'])
             self.ax[i].set_xlabel('Time')
@@ -130,13 +130,13 @@ class StateWidget(QWidget):
             ratio_estimate = np.array(self.state_estimate_stddevs[i][-1])/self.state_estimate_means[i][-1]
             ratio_prediction = np.array(self.state_prediction_stddevs[i][1])/self.state_prediction_means[i][1]
 
-            self.ax[i].annotate(f"{self.state_estimate_means[i][-1]:.2f}+/-{ci_estimate[-1]:.2f}", (n_estimates-1, self.state_estimate_means[i][-1]+0.3), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
-            self.ax[i].annotate(f"{self.state_prediction_means[i][1]:.2f}+/-{ci_prediction[1]:.2f}", (n_estimates, self.state_prediction_means[i][1]), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
+            # self.ax[i].annotate(f"{self.state_estimate_means[i][-1]:.2f}+/-{ci_estimate[-1]:.2f}", (n_estimates-1, self.state_estimate_means[i][-1]+0.3), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
+            # self.ax[i].annotate(f"{self.state_prediction_means[i][1]:.2f}+/-{ci_prediction[1]:.2f}", (n_estimates, self.state_prediction_means[i][1]-0.3), textcoords="offset points", xytext=(0,10), ha='center', fontsize=10)
 
             self.ax[i].fill_between(range(n_estimates), np.array(self.state_estimate_means[i])-ci_estimate, np.array(self.state_estimate_means[i])+ci_estimate, color='b', alpha=.1)
             self.ax[i].fill_between(range(n_estimates-1,n_estimates+n_predictions-1), np.array(self.state_prediction_means[i])-ci_prediction, np.array(self.state_prediction_means[i])+ci_prediction, color='r', alpha=.1)
             # make font size of legend 10
-            self.ax[i].legend(fontsize=10)
+            self.ax[i].legend(fontsize=8)
             # make all fonts smaller
             for item in ([self.ax[i].title, self.ax[i].xaxis.label, self.ax[i].yaxis.label] +
                      self.ax[i].get_xticklabels() + self.ax[i].get_yticklabels()):
@@ -147,7 +147,7 @@ class StateWidget(QWidget):
         self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
         os.makedirs(self.log_fpath, exist_ok=True)
 
-        self.static_canvas.figure.savefig(self.log_fpath + "state_plot_{}.png".format(n_estimates), format='png',transparent=False)
+        self.static_canvas.figure.savefig(self.log_fpath + "state_plot.pdf", format='pdf',transparent=False)
         self.static_canvas.draw()
         self.static_canvas.draw_idle()
 
