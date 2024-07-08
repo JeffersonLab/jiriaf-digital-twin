@@ -103,15 +103,16 @@ class StateWidget(QWidget):
     def plot(self):
         for i in range(2):
             # set title
-            self.ax[i].set_title('Z{}'.format(i+1))
             self.ax[i].clear()
-            # self.ax[i].set_xlim(0,100)
-            # self.ax[i].set_ylim(-0.1,5.1)
+            self.ax[i].set_xlim(0,100)
+            self.ax[i].set_ylim(-0.1,5.1)
             self.ax[i].set_yticks([0,2,4])
-            self.ax[i].set_yticklabels(['0%','50%','100%'])
+            self.ax[i].set_yticklabels(['0','2','4'])
             self.ax[i].set_xlabel('Time')
+            self.ax[i].set_title(f'Evolving State over Time')
             self.ax[i].grid()
-            self.ax[i].set_ylabel('Component {} State'.format(i+1))
+            # self.ax[i].set_ylabel('Component {} State'.format(i+1))
+            self.ax[i].set_ylabel('Expection Value of State')
             n_estimates = len(self.state_estimate_means[i])
             n_predictions = len(self.state_prediction_means[i])
             self.ax[i].plot(range(n_estimates-1,n_estimates+n_predictions-1),self.state_prediction_means[i], 'r--', linewidth=2, label='Predicted')
@@ -140,13 +141,15 @@ class StateWidget(QWidget):
             # make all fonts smaller
             for item in ([self.ax[i].title, self.ax[i].xaxis.label, self.ax[i].yaxis.label] +
                      self.ax[i].get_xticklabels() + self.ax[i].get_yticklabels()):
-                item.set_fontsize(10)
+                item.set_fontsize(8)
+
         # set the title
         from datetime import datetime
         self.log_fpath = "/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/"
         self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
         os.makedirs(self.log_fpath, exist_ok=True)
 
+        self.static_canvas.figure.set_size_inches(6, 8)
         self.static_canvas.figure.savefig(self.log_fpath + "state_plot.pdf", format='pdf',transparent=False)
         self.static_canvas.draw()
         self.static_canvas.draw_idle()

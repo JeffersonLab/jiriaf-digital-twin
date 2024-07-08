@@ -98,7 +98,7 @@ class SensorWidget(QWidget):
         print(f"n_estimates: {n_estimates}, xx: {xx}, xxref: {xxref}")
         for i, idx in enumerate(idxstoplot):
             print(f"idx: {idx} \n i: {i} \n sensor_data: {self.sensor_data} \n ref: {self.sensor_ref}")
-            self.ax.scatter(xx, [s[idx] for s in self.sensor_data], s=20, c='black', label='observed Lq')
+            self.ax.scatter(xx, [s[idx] for s in self.sensor_data], s=20, c='black', label='Observed Lq')
             mean_estimate = [s.data[idx] for s in self.sensor_ref[:n_estimates]]
             vars_estimate =  [s.vars[idx] for s in self.sensor_ref[:n_estimates]]
             ci_estimate = 2*np.sqrt(vars_estimate) #2 stddevs
@@ -110,13 +110,13 @@ class SensorWidget(QWidget):
             self.ax.plot(xxref[:n_estimates], mean_estimate, 'b-', linewidth=2, label='Estimated Lq')
             self.ax.fill_between(xxref[:n_estimates], np.array(mean_estimate)-ci_estimate, np.array(mean_estimate)+ci_estimate, color='b', alpha=.1)
 
-            self.ax.plot(xxref[n_estimates-1:], mean_predict, 'b--', linewidth=2)
-            self.ax.fill_between(xxref[n_estimates-1:], np.array(mean_predict)-ci_predict, np.array(mean_predict)+ci_predict, color='b', alpha=.1)
+            self.ax.plot(xxref[n_estimates-1:], mean_predict, 'r--', linewidth=2, label='Predicted Lq')
+            self.ax.fill_between(xxref[n_estimates-1:], np.array(mean_predict)-ci_predict, np.array(mean_predict)+ci_predict, color='r', alpha=.1)
 
-        # self.ax.set_xlim(0,100)
-        # self.ax.set_ylim(0,10)
+        self.ax.set_xlim(0,100)
+        self.ax.set_ylim(0,30)
 
-        self.ax.set_title('Sensor Data')
+        self.ax.set_title('Observed vs Estimated Queue Length')
         self.ax.set_xlabel('Time')
         self.ax.set_ylabel('Queue Length Lq')
         self.ax.legend(fontsize=8)
@@ -126,13 +126,14 @@ class SensorWidget(QWidget):
         #make all fonts smaller
         for item in ([self.ax.title, self.ax.xaxis.label, self.ax.yaxis.label] +
                         self.ax.get_xticklabels() + self.ax.get_yticklabels()):
-                item.set_fontsize(10)
+                item.set_fontsize(8)
 
         from datetime import datetime
         self.log_fpath = "/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/"
         self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
         os.makedirs(self.log_fpath, exist_ok=True)
 
+        self.static_canvas.figure.set_size_inches(6, 4)
         self.static_canvas.figure.savefig(self.log_fpath + "sensor_plot.pdf", format='pdf',transparent=False)
         self.static_canvas.draw_idle()
 

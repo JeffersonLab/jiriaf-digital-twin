@@ -103,7 +103,7 @@ class ControlWidget(QWidget):
         self.ax.plot(t[:n_estimates],self.control_estimate_argmax, 'b-', linewidth=2, label='Estimated')
         # self.ax.plot(range(len(self.control_truth)), self.control_truth,'k--', linewidth=2, label='Ground Truth')
         # self.plot_ellipses()
-        # self.ax.set_xlim(0,100)
+        self.ax.set_xlim(0,100)
         # self.ax.set_ylim(-0.1,1.1)
         self.ax.set_title('Control History')
         self.ax.legend(fontsize=8)
@@ -112,11 +112,14 @@ class ControlWidget(QWidget):
         self.ax.set_xlabel('Time')
         self.ax.set_ylabel('Control')
         self.ax.grid()
+ 
 
         # make all fonts smaller
         for item in ([self.ax.title, self.ax.xaxis.label, self.ax.yaxis.label] +
                         self.ax.get_xticklabels() + self.ax.get_yticklabels()):
-                item.set_fontsize(10)        
+                item.set_fontsize(8)        
+                # set the font to be serif, e.g.
+                
 
         # make directory if it doesn't exist
         from datetime import datetime
@@ -124,10 +127,11 @@ class ControlWidget(QWidget):
         self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
         os.makedirs(self.log_fpath, exist_ok=True)
 
+        # make figure 6x4 inches
+        self.static_canvas.figure.set_size_inches(6, 4)
         self.static_canvas.figure.savefig(self.log_fpath + "control_plot.pdf", format='pdf',transparent=False)
         self.static_canvas.draw()
         self.static_canvas.draw_idle()
-
 
     def ReceivedEstimateCallback(self, msg):
         # '''
