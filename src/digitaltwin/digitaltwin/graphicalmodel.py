@@ -375,7 +375,7 @@ class GraphicalModel(BayesianNetwork):
         Q = []
         # normalized measurements
         for idx, state in enumerate(self.config["flat_states"]):
-            ref_obs = self.config["observations"][str(state[0])][str(state[1])]["32c"]["mean"]
+            ref_obs = self.config["observations"][str(state[0])][str(state[1])]["32c"]["mean"] # use ref_lookup to get the theoretical observation
             cleanObservation = [x for x in ref_obs]
             for other_state in self.config["flat_states"]:
                 if (state is other_state):
