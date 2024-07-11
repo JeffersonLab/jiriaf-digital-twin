@@ -62,6 +62,7 @@ class GraphicalModel(BayesianNetwork):
         # self.E_factor = self.get_e_factor()
         self.Q_factor = self.get_Q_factor()
         self.sigma = 1.5
+        self.scalefactor = 100
         self.evidence = {}
         self.policy = None
         self.most_recent_control = 1 #assume start with 3g
@@ -355,12 +356,11 @@ class GraphicalModel(BayesianNetwork):
         for idx,state in enumerate(self.config["flat_states"]):
             if self.most_recent_control == 0:
                 cleanObservation = [x for x in self.config["observations"][str(state[0])][str(state[1])]["32c"]["theoretical"]]
-                scalefactor = 10000
             elif self.most_recent_control == 1:
                 cleanObservation = [x for x in self.config["observations"][str(state[0])][str(state[1])]["16c"]["theoretical"]]
                 scalefactor = 10000
             for sensIdx in range(len(cleanObservation)):
-                prob[idx] += np.log(norm.pdf(m[sensIdx], cleanObservation[sensIdx], self.sigma/np.sqrt(scalefactor))) # ev
+                prob[idx] += np.log(norm.pdf(m[sensIdx], cleanObservation[sensIdx], self.sigma/np.sqrt(self.scalefactor))) # ev
             prob[idx] = np.exp(prob[idx])
         prob = prob/np.linalg.norm(prob,1)
         eps = np.finfo(float).eps # smallest positive float number
