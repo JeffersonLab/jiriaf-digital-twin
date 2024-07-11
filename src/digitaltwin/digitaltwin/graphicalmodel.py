@@ -355,7 +355,7 @@ class GraphicalModel(BayesianNetwork):
         for idx,state in enumerate(self.config["flat_states"]):
             if self.most_recent_control == 0:
                 cleanObservation = [x for x in self.config["observations"][str(state[0])][str(state[1])]["32c"]["theoretical"]]
-                scalefactor = 32.0
+                scalefactor = 10000
             elif self.most_recent_control == 1:
                 cleanObservation = [x for x in self.config["observations"][str(state[0])][str(state[1])]["16c"]["theoretical"]]
                 scalefactor = 16.0
