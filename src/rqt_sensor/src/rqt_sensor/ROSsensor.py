@@ -107,14 +107,14 @@ class SensorWidget(QWidget):
             vars_predict =  [s.vars[idx] for s in self.sensor_ref[n_estimates-1:]]
             ci_predict = 2*np.sqrt(vars_predict) #2 stddevs
 
-            self.ax.plot(xxref[:n_estimates], mean_estimate, 'b-', linewidth=2, label='Estimated Lq')
-            self.ax.fill_between(xxref[:n_estimates], np.array(mean_estimate)-ci_estimate, np.array(mean_estimate)+ci_estimate, color='b', alpha=.1)
+            # self.ax.plot(xxref[:n_estimates], mean_estimate, 'b-', linewidth=2, label='Estimated Lq')
+            # self.ax.fill_between(xxref[:n_estimates], np.array(mean_estimate)-ci_estimate, np.array(mean_estimate)+ci_estimate, color='b', alpha=.1)
 
-            self.ax.plot(xxref[n_estimates-1:], mean_predict, 'r--', linewidth=2, label='Predicted Lq')
-            self.ax.fill_between(xxref[n_estimates-1:], np.array(mean_predict)-ci_predict, np.array(mean_predict)+ci_predict, color='r', alpha=.1)
+            # self.ax.plot(xxref[n_estimates-1:], mean_predict, 'r--', linewidth=2, label='Predicted Lq')
+            # self.ax.fill_between(xxref[n_estimates-1:], np.array(mean_predict)-ci_predict, np.array(mean_predict)+ci_predict, color='r', alpha=.1)
 
         self.ax.set_xlim(0,100)
-        self.ax.set_ylim(0,30)
+        # self.ax.set_ylim(0,10)
 
         self.ax.set_title('Observed vs Estimated Queue Length')
         self.ax.set_xlabel('Time')
