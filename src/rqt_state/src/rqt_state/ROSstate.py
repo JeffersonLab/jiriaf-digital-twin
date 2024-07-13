@@ -172,7 +172,10 @@ class StateWidget(QWidget):
         self.joints = [np.array(m.joint).reshape(5,5) for m in msg.states]
 
         self.state_estimate_means[0] = [np.dot(range(5), m) for m in self.state_estimate[0]]
+        # get the index of max value
+        # self.state_estimate_means[0] = [np.argmax(m) for m in self.state_estimate[0]]
         self.state_estimate_means[1] = [np.dot(range(5), m) for m in self.state_estimate[1]]
+        # self.state_estimate_means[1] = [np.argmax(m) for m in self.state_estimate[1]]
 
         self.state_estimate_stddevs[0] =[np.power(np.dot(np.power(range(5),2), m) - np.power(np.dot(range(5), m),2),0.5) for m in self.state_estimate[0]]
         self.state_estimate_stddevs[1] =[np.power(np.dot(np.power(range(5),2), m) - np.power(np.dot(range(5), m),2),0.5) for m in self.state_estimate[1]]
