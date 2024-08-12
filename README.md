@@ -21,6 +21,23 @@ The experimental setup includes:
 
 The results underscore the potential of DBN-based digital twins in enhancing real-time monitoring and decision-making in complex systems. The model successfully managed system pressure through adaptive control recommendations, providing valuable insights for future developments in digital twin technology.
 
+## Usage Instructions
+
+To build and run the source code in a development container with Visual Studio Code, follow these steps:
+
+### Prerequisites
+
+Set up the environment using the `.devcontainer/Dockerfile` or directly use the devcontainer feature in the Visual Studio Code IDE.
+
+### Steps
+
+1. Run `/run/build.sh` to compile the source code.
+2. Run `/run/run_model.sh` to run the model.
+
+### Essential Inputs
+
+The essential inputs for this modeling are stored in the file: `src/digitaltwin/inputfiles/UAVconfig.json`.
+
 ## Citation
 
 This repository is based on the following work and repository. If you use this work in an academic context, please cite the following publication(s):
