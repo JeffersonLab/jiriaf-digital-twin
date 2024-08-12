@@ -9,7 +9,7 @@ from digitaltwin.msg import Sensor, SensorList, ControlA, State, StateList, Rewa
 class Logger(Node):
     def __init__(self):
         super().__init__('uav_logger')
-        self.log_fpath = '/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/' #'./src/digitaltwin/outputfiles/'
+        self.log_fpath = '/workspaces/jiriaf-digital-twin/src/digitaltwin/outputfiles/' #'./src/digitaltwin/outputfiles/'
         self.timestep = 0
         self.data = {}
         self.data["sensor_data"] = []
@@ -65,7 +65,7 @@ class Logger(Node):
 
     def write_data(self):
         # make directory datetime.now().strftime(self.log_fpath + "" + '%m%d_T%H%M%S
-        self.log_fpath = "/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/"
+        self.log_fpath = "/workspaces/jiriaf-digital-twin/src/digitaltwin/outputfiles/"
         self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
         self.log_fname = datetime.now().strftime(self.log_fpath + 'parameter.json')
         self.data["T"] = int(self.timestep)

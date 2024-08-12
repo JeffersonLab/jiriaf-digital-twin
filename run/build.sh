@@ -3,7 +3,7 @@
 mkdir -p ~/digitaltwin_ws/src
 cd ~/digitaltwin_ws/src
 
-cp -r /workspaces/UAV-Digital-Twin/src/* .
+cp -r /workspaces/jiriaf-digital-twin/src/* .
 
 cd ~/digitaltwin_ws/src
 cd ../

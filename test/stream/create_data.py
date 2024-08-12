@@ -3,8 +3,8 @@ import json
 
 def combine_json():
     data_files = [
-        "/workspaces/UAV-Digital-Twin/test/stream/sim_init_sensor_data/fs_l100_cpu2.json",
-        "/workspaces/UAV-Digital-Twin/test/stream/sim_init_sensor_data/fs_l100_cpu8.json",
+        "/workspaces/jiriaf-digital-twin/test/stream/sim_init_sensor_data/fs_l100_cpu2.json",
+        "/workspaces/jiriaf-digital-twin/test/stream/sim_init_sensor_data/fs_l100_cpu8.json",
     ]
 
     # combine the json files
@@ -116,4 +116,4 @@ def get_freq(data_file):
 
 if __name__ == "__main__":
     gen_data(combine_json())
-    # get_freq(data_file="/workspaces/UAV-Digital-Twin/test/stream/sim_init_sensor_data/fs_l100_cpu3.json")
+    # get_freq(data_file="/workspaces/jiriaf-digital-twin/test/stream/sim_init_sensor_data/fs_l100_cpu3.json")

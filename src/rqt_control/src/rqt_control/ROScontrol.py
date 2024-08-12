@@ -123,7 +123,7 @@ class ControlWidget(QWidget):
 
         # make directory if it doesn't exist
         from datetime import datetime
-        self.log_fpath = "/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/"
+        self.log_fpath = "/workspaces/jiriaf-digital-twin/src/digitaltwin/outputfiles/"
         self.log_fpath = self.log_fpath + datetime.now().strftime('%m%d_T%H') + '/'
         os.makedirs(self.log_fpath, exist_ok=True)
 

@@ -72,7 +72,7 @@ class GraphicalModel(BayesianNetwork):
         start = timer()
         self.bake()
         yaml_file = self.graph.to_json()
-        with open('/workspaces/UAV-Digital-Twin/src/digitaltwin/outputfiles/graph.json', 'w') as f:
+        with open('/workspaces/jiriaf-digital-twin/src/digitaltwin/outputfiles/graph.json', 'w') as f:
             f.write(yaml_file)
             
         self.joint = self.compute_joint(self.evidence, 10)
